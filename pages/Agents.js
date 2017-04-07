@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 
 import View from './abstract/View'
 import ListView from './abstract/ListView'
+import DetailView from './abstract/detailView'
 
 import Fetch from '../core/fetch'
 import Input from '../components/input'
@@ -13,11 +14,36 @@ class Agents extends ListView {
 
 		constructor(props) {
 		    super(props);
-		    this.state = {};
+				this.onFetch = this.onFetch.bind(this);
 		}
 
 		componentDidMount() {
-				Fetch.get("agent/", (items) => {
+				this.onFetch(null);
+		}
+
+		onDelete() {
+				console.log(this.state);
+
+				let items = this.state.items.filter((item) => this.state.selectedItem.id != item.id);
+				this.setState({items});
+				if (items) super.onItemClick(0);
+		}
+
+		onFilter(event) {
+				super.onChange(event);
+				this.onFetch({filter: event.target.value});
+		}
+
+		onFetch(extraParameters) {
+				let defaultParameters = {
+						orderedBy: "name",
+						pageSize: 5,
+						pageOffset: 0
+				};
+
+				let parameters = Object.assign({}, defaultParameters, extraParameters);
+
+				Fetch.get("agent/", parameters, (items) => {
 						this.setState({items});
 						if (items) super.onItemClick(0);
 				});
@@ -42,13 +68,13 @@ class Agents extends ListView {
 						<hr />
 
 						<p>Search</p>
-						<Input value={this.state.filter} onChange={super.onChange.bind(this)} /> <br/>
+						<Input value={this.state.filter} onChange={this.onFilter.bind(this)} /> <br/>
 						<hr />
 
 						{items}
 						<hr />
 
-						<Details value={selectedItem}/>
+						<Agent value={selectedItem} onFetch={this.onFetch}/>
 						<hr />
 
 						<p>Selected Index: {this.state.selectedIndex}</p>
@@ -61,34 +87,84 @@ class Agents extends ListView {
 		}
 }
 
-class Details extends View {
+class Agent extends DetailView {
 
 		constructor(props) {
 		    super(props);
-		    this.state = {};
+		}
+
+		onDelete() {
+				console.log("on delete id: " + this.props.value.id);
+				let self = this;
+				Fetch.delete("agent/", this.props.value.id, () => this.props.onFetch());
+		}
+
+		onSave() {
+				console.log("Saving", "Update Mode:", this.state.updateMode);
+				this.state.updateMode == "CREATE" ? this.onCreate() :  this.onUpdate();
+		}
+
+		onCreate() {
+				console.log("creating..");
+				Fetch.post("agent/", this.state.value, () => {
+						this.setState({updateMode : null});
+						this.props.onFetch();
+				});
+
+		}
+
+		onUpdate() {
+				console.log("updating..");
+		}
+
+		onChange(event) {
+		    let value = this.state.value || {};
+		    value[event.target.name] = event.target.value;
+		    this.setState(value);
 		}
 
 		render() {
-				let value = this.props.value || {};
+				let value = this.state.value || this.props.value || {};
+
+				// <p>Modified By</p>
+				// <Input value={value.modifiedBy} disabled={!this.state.updateMode}
+				// 		onChange={super.onChange.bind(this)} />
+				//
+				// <p>Modified Date</p>
+				// <Input value={value.modifiedDate} disabled={!this.state.updateMode}
+				// 		onChange={super.onChange.bind(this)} />
+
+				let viewingActions = <div>
+						<Button onClick={() => super.onAdd()}>Add</Button>
+						<Button onClick={() => super.onEdit()}>Edit</Button>
+						<Button onClick={() => this.onDelete()}>Delete</Button>
+				</div>;
+
+				let editingActions = <div>
+						<Button onClick={() => this.onSave()}>Save</Button>
+						<Button onClick={() => super.onCancel()}>Cancel</Button>
+				</div>;
 
 		    return <div>
 						<p>Name</p>
-						<Input value={value.name} onChange={super.onChange.bind(this)} /> <br/>
+						<Input ref="initial" autofocus="true"
+								name="name" value={value.name} disabled={!this.state.updateMode}
+								onChange={this.onChange.bind(this)} /> <br/>
 
 						<p>Address</p>
-						<Input value={value.address} onChange={super.onChange.bind(this)} />
+						<Input name="address" value={value.address} disabled={!this.state.updateMode}
+								onChange={this.onChange.bind(this)} />
 
 						<p>Contact</p>
-						<Input value={value.contact} onChange={super.onChange.bind(this)} />
+						<Input name="contact" value={value.contact} disabled={!this.state.updateMode}
+								onChange={this.onChange.bind(this)} />
 
 						<p>Tin</p>
-						<Input value={value.tin} onChange={super.onChange.bind(this)} />
+						<Input name="tin" value={value.tin} disabled={!this.state.updateMode}
+								onChange={this.onChange.bind(this)} />
 
-						<p>Modified By</p>
-						<Input value={value.modifiedBy} onChange={super.onChange.bind(this)} />
-
-						<p>Modified Date</p>
-						<Input value={value.modifiedDate} onChange={super.onChange.bind(this)} />
+						<br/><br/>
+						{this.state.updateMode ? editingActions : viewingActions}
 		    </div>
 		}
 }

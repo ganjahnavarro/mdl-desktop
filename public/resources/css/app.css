@@ -1,3 +1,27 @@
 body {
     padding: 6em;
 }
+
+* {
+    font-family: Roboto;
+    font-size: 16px;
+}
+
+input {
+    width: 50%;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid gainsboro;
+    margin-bottom: 15px;
+}
+
+
+button {
+    background-color: dodgerblue;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-right: 5px;
+    border-radius: 5px;
+    outline: none;
+}
