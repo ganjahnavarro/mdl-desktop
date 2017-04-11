@@ -7,7 +7,13 @@ class Input extends React.Component {
 		}
 
 		render() {
-		    return <input ref="self" {...this.props} />
+				let props = Object.assign({}, this.props);
+				delete props.label;
+
+		    return <div>
+						<p>{this.props.label}</p>
+						<input ref="self" {...props} />
+				</div>
 		}
 
 }

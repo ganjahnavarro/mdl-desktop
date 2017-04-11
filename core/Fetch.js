@@ -25,6 +25,17 @@ Fetch.post = function(resource, requestBody, successCallback, errorCallback) {
         .catch((error) => handleError(errorCallback, error));
 }
 
+Fetch.patch = function(resource, requestBody, successCallback, errorCallback) {
+    let headers = Object.assign({}, getDefaultHeaders(), {
+        method: "PATCH",
+        body: JSON.stringify(requestBody)
+    });
+
+    fetch(BASE_URL + resource, headers)
+        .then((response) => handleSuccess(successCallback, response))
+        .catch((error) => handleError(errorCallback, error));
+}
+
 Fetch.delete = function(resource, id, successCallback, errorCallback) {
     let url = BASE_URL + resource + id;
     let headers = Object.assign({}, getDefaultHeaders(), {
@@ -32,7 +43,7 @@ Fetch.delete = function(resource, id, successCallback, errorCallback) {
     });
 
     fetch(url, headers)
-        .then((response) => handleSuccess(successCallback, response))
+        .then((response) => successCallback())
         .catch((error) => handleError(errorCallback, error));
 }
 

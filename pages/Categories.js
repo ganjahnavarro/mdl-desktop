@@ -9,11 +9,11 @@ import Input from '../components/input'
 import Audit from '../components/Audit'
 
 
-class Agents extends ListView {
+class Categories extends ListView {
 
 		constructor(props) {
 		    super(props);
-        this.endpoint = "agent/";
+        this.endpoint = "category/";
 		}
 
 		render() {
@@ -25,7 +25,7 @@ class Agents extends ListView {
 				}
 
 		    return <div>
-						<p>At agents. <Link to="/">Go to home</Link></p>
+						<p>At categories. <Link to="/">Go to home</Link></p>
 						<hr />
 
 						<p>Search</p>
@@ -35,39 +35,28 @@ class Agents extends ListView {
 						{items}
 						<hr />
 
-						<Agent value={selectedItem} onFetch={this.onFetch}/>
+						<Category value={selectedItem} onFetch={this.onFetch}/>
 		    </div>
 		}
 }
 
-class Agent extends DetailView {
+class Category extends DetailView {
 
 		constructor(props) {
 		    super(props);
-        this.endpoint = "agent/";
+        this.endpoint = "category/";
     }
 
 		render() {
-				let value = this.state.value;
-
 		    return <div>
 						<Input ref="initial" autofocus="true" label="Name"
 								name="name" value={this.state.value.name} disabled={!this.state.updateMode}
 								onChange={super.onChange.bind(this)} />
 
-						<Input name="address" label="Address" value={this.state.value.address} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
-
-						<Input name="contact" label="Contact" value={this.state.value.contact} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
-
-						<Input name="tin" label="TIN" value={this.state.value.tin} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
-
-            <Audit value={value} />
+            <Audit value={this.state.value} />
 						{super.getActions()}
 		    </div>
 		}
 }
 
-export default Agents;
+export default Categories;

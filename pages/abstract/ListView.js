@@ -1,11 +1,52 @@
 import React from 'react'
 import View from './View'
 
-class ListView extends View {
+import Fetch from '../../core/fetch'
+
+class Temp extends View {
 
     constructor(props) {
         super(props);
+				this.onFetch = this.onFetch.bind(this);
     }
+
+    componentDidMount() {
+				this.onFetch(null);
+		}
+
+    onDelete() {
+				console.log(this.state);
+
+				let items = this.state.items.filter((item) => this.state.selectedItem.id != item.id);
+				this.setState({items});
+				if (items) this.onItemClick(0);
+		}
+
+    onFilter(event) {
+				super.onChange(event);
+				this.onFetch({filter: event.target.value});
+		}
+
+		onFetch(extraParameters) {
+				let defaultParameters = {
+						orderedBy: "name",
+						pageSize: 5,
+						pageOffset: 0
+				};
+
+				let parameters = Object.assign({}, defaultParameters, extraParameters);
+
+				Fetch.get(this.endpoint, parameters, (items) => {
+						this.setState({items});
+						if (items) this.onItemClick(0);
+				});
+		}
+
+    renderItem(item, index) {
+				return <p key={index} onClick={this.onItemClick.bind(this, index)}>
+						{item.name}
+				</p>;
+		}
 
     firstItem() {
 				this.onItemClick(0);
@@ -40,4 +81,4 @@ class ListView extends View {
 
 }
 
-export default ListView;
+export default Temp;

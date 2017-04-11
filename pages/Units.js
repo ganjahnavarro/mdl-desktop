@@ -9,11 +9,11 @@ import Input from '../components/input'
 import Audit from '../components/Audit'
 
 
-class Agents extends ListView {
+class Units extends ListView {
 
 		constructor(props) {
 		    super(props);
-        this.endpoint = "agent/";
+        this.endpoint = "unit/";
 		}
 
 		render() {
@@ -25,7 +25,7 @@ class Agents extends ListView {
 				}
 
 		    return <div>
-						<p>At agents. <Link to="/">Go to home</Link></p>
+						<p>At units. <Link to="/">Go to home</Link></p>
 						<hr />
 
 						<p>Search</p>
@@ -35,16 +35,16 @@ class Agents extends ListView {
 						{items}
 						<hr />
 
-						<Agent value={selectedItem} onFetch={this.onFetch}/>
+						<Unit value={selectedItem} onFetch={this.onFetch}/>
 		    </div>
 		}
 }
 
-class Agent extends DetailView {
+class Unit extends DetailView {
 
 		constructor(props) {
 		    super(props);
-        this.endpoint = "agent/";
+        this.endpoint = "unit/";
     }
 
 		render() {
@@ -55,13 +55,7 @@ class Agent extends DetailView {
 								name="name" value={this.state.value.name} disabled={!this.state.updateMode}
 								onChange={super.onChange.bind(this)} />
 
-						<Input name="address" label="Address" value={this.state.value.address} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
-
-						<Input name="contact" label="Contact" value={this.state.value.contact} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
-
-						<Input name="tin" label="TIN" value={this.state.value.tin} disabled={!this.state.updateMode}
+						<Input name="pluralName" label="Plural Name" value={this.state.value.pluralName} disabled={!this.state.updateMode}
 								onChange={super.onChange.bind(this)} />
 
             <Audit value={value} />
@@ -70,4 +64,4 @@ class Agent extends DetailView {
 		}
 }
 
-export default Agents;
+export default Units;

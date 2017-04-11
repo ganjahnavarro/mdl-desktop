@@ -4,23 +4,15 @@ import { Link } from 'react-router'
 
 class Home extends View {
 
-		constructor(props) {
-		    super(props);
-		    this.state = {};
-		}
-
-		componentDidMount() {
-
-		}
-
-		componentDidUpdate() {
-
-		}
-
 		render() {
 		    return <div>
 						<p>At home</p>
-            <Link to="/agents">Go to agents</Link>
+						<p><Link to="/units"> -> units</Link></p>
+						<p><Link to="/categories"> -> categories</Link></p>
+						<p><Link to="/stocks"> -> stocks</Link></p>
+            <p><Link to="/agents"> -> agents</Link></p>
+						<p><Link to="/suppliers"> -> suppliers</Link></p>
+						<p><Link to="/customers"> -> customers</Link></p>
 		    </div>
 		}
 }

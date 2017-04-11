@@ -9,11 +9,11 @@ import Input from '../components/input'
 import Audit from '../components/Audit'
 
 
-class Agents extends ListView {
+class Suppliers extends ListView {
 
 		constructor(props) {
 		    super(props);
-        this.endpoint = "agent/";
+        this.endpoint = "supplier/";
 		}
 
 		render() {
@@ -25,7 +25,7 @@ class Agents extends ListView {
 				}
 
 		    return <div>
-						<p>At agents. <Link to="/">Go to home</Link></p>
+						<p>At suppliers. <Link to="/">Go to home</Link></p>
 						<hr />
 
 						<p>Search</p>
@@ -35,16 +35,16 @@ class Agents extends ListView {
 						{items}
 						<hr />
 
-						<Agent value={selectedItem} onFetch={this.onFetch}/>
+						<Supplier value={selectedItem} onFetch={this.onFetch}/>
 		    </div>
 		}
 }
 
-class Agent extends DetailView {
+class Supplier extends DetailView {
 
 		constructor(props) {
 		    super(props);
-        this.endpoint = "agent/";
+        this.endpoint = "supplier/";
     }
 
 		render() {
@@ -61,6 +61,9 @@ class Agent extends DetailView {
 						<Input name="contact" label="Contact" value={this.state.value.contact} disabled={!this.state.updateMode}
 								onChange={super.onChange.bind(this)} />
 
+						<Input name="fax" label="Fax" value={this.state.value.fax} disabled={!this.state.updateMode}
+								onChange={super.onChange.bind(this)} />
+
 						<Input name="tin" label="TIN" value={this.state.value.tin} disabled={!this.state.updateMode}
 								onChange={super.onChange.bind(this)} />
 
@@ -70,4 +73,4 @@ class Agent extends DetailView {
 		}
 }
 
-export default Agents;
+export default Suppliers;

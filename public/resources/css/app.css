@@ -7,11 +7,14 @@ body {
     font-size: 16px;
 }
 
-input {
-    width: 50%;
+input, select {
     padding: 5px 10px;
-    border-radius: 5px;
     border: 1px solid gainsboro;
+}
+
+input, select, div.Select {
+    width: 50%;
+    border-radius: 5px;
     margin-bottom: 15px;
 }
 
