@@ -13,6 +13,9 @@ class Home extends View {
             <p><Link to="/agents"> -> agents</Link></p>
 						<p><Link to="/suppliers"> -> suppliers</Link></p>
 						<p><Link to="/customers"> -> customers</Link></p>
+						<br/>
+
+						<p><Link to="/purchaseOrders"> -> purchase orders</Link></p>
 		    </div>
 		}
 }

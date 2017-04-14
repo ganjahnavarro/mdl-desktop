@@ -73,7 +73,7 @@ class Customer extends DetailView {
         }
 
 		    return <div>
-						<Input ref="initial" autofocus="true" label="Name"
+						<Input ref="initial" autoFocus="true" label="Name"
 								name="name" value={value.name} disabled={!this.state.updateMode}
 								onChange={super.onChange.bind(this)} />
 
