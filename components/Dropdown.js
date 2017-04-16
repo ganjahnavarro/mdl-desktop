@@ -4,12 +4,20 @@ import Select from 'react-select';
 class Dropdown extends React.Component {
 
 		render() {
+				/*
+					https://github.com/JedWatson/react-select#further-options
+				*/
+
         let props = Object.assign({}, this.props);
+				props.clearable = false;
         delete props.label;
+
+				let asyncSelect = typeof this.props.loadOptions != "undefined";
+				let selectComponent = asyncSelect ? <Select.Async {...props} /> : <Select {...props} />;
 
         return <div>
             <p>{this.props.label}</p>
-						<Select {...props} />
+						{selectComponent}
         </div>
 		}
 

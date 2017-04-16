@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React from 'react'
 import Dropdown from './dropdown'
 
@@ -5,53 +6,46 @@ class Datatable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            rows: this.props.rows
+        };
     }
 
     componentDidMount() {
-        let self = this;
-        $(document).keydown(function(event){
-            if (event.keyCode == 37) {
-                console.log("left");
-
-                let { selectedColumnIndex } = self.state;
-                selectedColumnIndex = Math.max(0, selectedColumnIndex - 1);
-                self.setState({selectedColumnIndex});
-
-                return false;
-            }
-
-            if (event.keyCode == 38) {
-                console.log("up");
-
-                let { selectedRowIndex } = self.state;
-                selectedRowIndex = Math.max(0, selectedRowIndex - 1);
-                self.setState({selectedRowIndex});
-
-                return false;
-            }
-
-            if (event.keyCode == 39) {
-                console.log("right");
-
-                let { selectedColumnIndex } = self.state;
-                selectedColumnIndex = Math.min(self.props.columns.length, selectedColumnIndex + 1);
-                self.setState({selectedColumnIndex});
-
-                return false;
-            }
-
-            if (event.keyCode == 40) {
-                console.log("down");
-
-                let { selectedRowIndex, stateRows } = self.state;
-                let rows = self.props.rows || [];
-                selectedRowIndex = Math.min(rows.length, selectedRowIndex + 1);
-                self.setState({selectedRowIndex});
-
+        $(document).keydown((event) => {
+            if ([37, 38, 39, 40].includes(event.keyCode)) {
+                if (event.keyCode == 37) this.onKeyLeft();
+                if (event.keyCode == 38) this.onKeyUp();
+                if (event.keyCode == 39) this.onKeyRight();
+                if (event.keyCode == 40) this.onKeyDown();
                 return false;
             }
         });
+    }
+
+    onKeyLeft() {
+        let { selectedColumnIndex } = this.state;
+        selectedColumnIndex = Math.max(0, selectedColumnIndex - 1);
+        this.setState({selectedColumnIndex});
+    }
+
+    onKeyUp() {
+        let { selectedRowIndex } = this.state;
+        selectedRowIndex = Math.max(0, selectedRowIndex - 1);
+        this.setState({selectedRowIndex});
+    }
+
+    onKeyRight() {
+        let { selectedColumnIndex } = this.state;
+        selectedColumnIndex = Math.min(this.props.columns.length, selectedColumnIndex + 1);
+        this.setState({selectedColumnIndex});
+    }
+
+    onKeyDown() {
+        let { selectedRowIndex, stateRows } = this.state;
+        let rows = this.state.rows || [];
+        selectedRowIndex = Math.min(rows.length, selectedRowIndex + 1);
+        this.setState({selectedRowIndex});
     }
 
     componentDidUpdate() {
@@ -72,7 +66,7 @@ class Datatable extends React.Component {
     }
 
     getBody() {
-        let rows = this.state.rows || this.props.rows;
+        let rows = this.state.rows;
         let rowComponents = [];
 
         if (rows) {
@@ -94,15 +88,39 @@ class Datatable extends React.Component {
     }
 
     onCellEdit(columnKey, rowIndex, event) {
-        let rows = this.state.rows || this.props.rows;
-        rows[rowIndex][columnKey] = event.target.value;
+        let rows = this.state.rows;
+        _.set(rows[rowIndex], columnKey, event.target.value);
         this.setState({rows});
     }
 
-    onTestChange(rowIndex, agent) {
-        let rows = this.state.rows || this.props.rows;
-        rows[rowIndex].agent.id = agent.value;
+    onDropdownSelect(columnKey, rowIndex, selected) {
+        /* Should not be defined here */
+        let items = [{
+            id: 110,
+            name: 'Gan',
+            description: 'Ganj description',
+            unit: 'm'
+        }, {
+            id: 220,
+            name: 'Aubs',
+            description: 'Aubs description',
+            unit: 'km'
+        }, {
+            id: 330,
+            name: 'Dex',
+            description: 'Xc description',
+            unit: 'cm'
+        }];
+
+        let item = items.find((item) => item.id == selected.value);
+
+        let rows = this.state.rows;
+        _.set(rows[rowIndex], columnKey, item);
         this.setState({rows});
+
+        // let rows = this.state.rows;
+        // _.set(rows[rowIndex], columnKey + ".id", selected.value);
+        // this.setState({rows});
 		}
 
     renderCell(column, columnIndex, row, rowIndex) {
@@ -110,8 +128,8 @@ class Datatable extends React.Component {
         let selected = columnIndex == selectedColumnIndex && rowIndex == selectedRowIndex;
 
         let onCellClick = () => {
-            console.log("on focus!", selected);
             if (!selected) {
+                this.onCellFocus = true;
 
                 this.setState({
                     selectedColumnIndex: columnIndex,
@@ -121,27 +139,22 @@ class Datatable extends React.Component {
         };
 
         let cellClassName = selected ? "selected" : null;
-        let cellContent = column.test ? "" : row[column.key];
+        let cellContent = typeof column.getOptions == "undefined" ? _.get(row, column.key) : _.get(row, column.key).name;
 
         let tabIndex = this.tabIndex++;
 
         if (selected && !this.props.disabled && column.editable) {
             cellClassName += " editing";
-            this.onCellFocus = true;
 
-            let inputBasic = <input value={row[column.key]}
+            let inputBasic = <input value={cellContent}
                 onChange={(event) => this.onCellEdit(column.key, rowIndex, event)}
-                ref={(input) => {this.selectedInput = input;}}
+                ref={(input) => {this.selectedInput = input}}
                 tabIndex={tabIndex} />;
 
-            let inputDropdown = <Dropdown value={row.agent.id}
-								options={this.props.testList}
-                onChange={(agent) => this.onTestChange(rowIndex, agent)} />
+            let inputDropdown = <Dropdown value={_.get(row, column.key).id} loadOptions={column.getOptions}
+                onChange={(selected) => this.onDropdownSelect(column.key, rowIndex, selected)} />
 
-            console.log(row.agent);
-            console.log(this.props.testList); 
-
-            cellContent = column.test ? inputDropdown : inputBasic;
+            cellContent = typeof column.getOptions == "undefined" ? inputBasic : inputDropdown;
         }
 
         let props = {

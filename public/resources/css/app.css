@@ -6,7 +6,7 @@ body {
     font-family: Roboto;
     font-size: 16px;
 }
-
+/*
 input, select {
     padding: 5px 10px;
     border: 1px solid gainsboro;
@@ -27,7 +27,7 @@ button {
     margin-right: 5px;
     border-radius: 5px;
     outline: none;
-}
+}*/
 
 
 /* Scrollbar */
@@ -53,7 +53,7 @@ button {
 }
 
 /* Datatable */
-table tr, table tr td {
+/*table tr, table tr td {
     height: 40px
 }
 
@@ -74,4 +74,4 @@ table input, table select, table div.Select {
     border-radius: 0;
     margin: 0;
     height: 40px;
-}
+}*/

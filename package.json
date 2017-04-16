@@ -16,6 +16,7 @@
     "compression": "^1.6.2",
     "express": "^4.14.0",
     "js-base64": "^2.1.9",
+    "lodash": "^4.17.4",
     "react": "^15.4.2",
     "react-addons-update": "^15.5.2",
     "react-data-grid": "^2.0.27",

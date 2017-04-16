@@ -13,8 +13,26 @@ class PurchaseOrders extends View {
     constructor(props) {
         super(props);
 
-        this.state.columns = [
-            {
+        let getOptions = function(input, callback) {
+            setTimeout(function() {
+                callback(null, {
+                    options: [{
+                        value: 110,
+                        label: "Gan"
+                    }, {
+                        value: 220,
+                        label: "Aubs"
+                    }, {
+                        value: 330,
+                        label: "Dex"
+                    }],
+
+                    cache: false
+                });
+            }, 250);
+        };
+
+        this.state.columns = [{
                 key: 'id',
                 name: 'ID',
                 editable: false
@@ -26,7 +44,50 @@ class PurchaseOrders extends View {
                 key: 'agent',
                 name: 'Agent',
                 editable: true,
-                test: true
+                getOptions: getOptions
+            }, {
+                key: 'agent.description',
+                name: 'Description'
+            }, {
+                key: 'agent.unit',
+                name: 'Unit'
+            }, {
+                key: 'amount',
+                name: 'Amount',
+                editable: true
+            }
+        ];
+
+        this.state.customers = [{
+                id: 1,
+                name: 'Ganjah',
+                agent: {
+                    id: 110,
+                    name: 'Gan',
+                    description: 'Ganj description',
+                    unit: 'm'
+                },
+                amount: 100
+            }, {
+                id: 2,
+                name: 'Aubrey',
+                agent: {
+                    id: 220,
+                    name: 'Aubs',
+                    description: 'Aubs description',
+                    unit: 'km'
+                },
+                amount: 120
+            }, {
+                id: 3,
+                name: 'Dexter',
+                agent: {
+                    id: 330,
+                    name: 'Dex',
+                    description: 'Xc description',
+                    unit: 'cm'
+                },
+                amount: 100
             }
         ];
     }
@@ -37,11 +98,11 @@ class PurchaseOrders extends View {
             pageSize: 10
         };
 
-        Fetch.get("customer/", parameters, (customers) => {
-            this.setState({customers});
-        });
-
-        Provider.loadAgents((agents) => this.setState({agents}));
+        // Fetch.get("customer/", parameters, (customers) => {
+        //     this.setState({customers});
+        // });
+        //
+        // Provider.loadAgents((agents) => this.setState({agents}));
     }
 
     render() {
@@ -52,8 +113,7 @@ class PurchaseOrders extends View {
             <Datatable
                 columns={this.state.columns}
                 rows={this.state.customers}
-                disabled={false}
-                testList={this.state.agents} />
+                disabled={false} />
 
             <button>Save</button>
             <button>Cancel</button>
