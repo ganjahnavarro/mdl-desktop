@@ -49,7 +49,7 @@ class Category extends DetailView {
 
 		render() {
 		    return <div>
-						<Input ref="initial" autoFocus="true" label="Name"
+						<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
 								name="name" value={this.state.value.name} disabled={!this.state.updateMode}
 								onChange={super.onChange.bind(this)} />
 

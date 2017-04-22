@@ -54,7 +54,7 @@ class Detail extends View {
             updateMode: "CREATE",
             value: {}
         }, function() {
-            this.refs.initial.focus();
+            this.initialInput.focus();
         });
     }
 
@@ -68,7 +68,7 @@ class Detail extends View {
         this.setState({
             updateMode: "EDIT",
         }, function() {
-            this.refs.initial.focus();
+            this.initialInput.focus();
         });
     }
 

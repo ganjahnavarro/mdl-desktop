@@ -88,7 +88,7 @@ class Stock extends DetailView {
         }
 
 		    return <div>
-						<Input ref="initial" autoFocus="true" label="Name"
+						<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
 								name="name" value={value.name} disabled={!this.state.updateMode}
 								onChange={super.onChange.bind(this)} />
 

@@ -4,6 +4,8 @@ import { Link } from 'react-router';
 import Provider from '../core/provider'
 import Fetch from '../core/fetch'
 
+import Input from '../components/input'
+import Dropdown from '../components/dropdown'
 import Datatable from '../components/datatable'
 
 import View from './abstract/View'
@@ -12,108 +14,118 @@ class PurchaseOrders extends View {
 
     constructor(props) {
         super(props);
+        this.state.pageOffset = 0;
+        this.state.purchaseOrder = {};
 
-        let getOptions = function(input, callback) {
-            setTimeout(function() {
-                callback(null, {
-                    options: [{
-                        value: 110,
-                        label: "Gan"
-                    }, {
-                        value: 220,
-                        label: "Aubs"
-                    }, {
-                        value: 330,
-                        label: "Dex"
-                    }],
+        this.state.updateMode = "UPDATE";
 
-                    cache: false
-                });
-            }, 250);
+        let getStocks = (input, callback) => {
+
+            let parameters = {
+                filter: input,
+    						orderedBy: "name",
+    						pageSize: 5
+    				};
+
+    				Fetch.get("stock/", parameters, (items) => {
+                Provider.filteredItems.stock = items;
+
+                if (items) {
+                    let filteredStocks = items.map((item) => {
+                        return {value: item.id, label: item.name}
+                    });
+                    callback(null, { options: filteredStocks, cache: false });
+                }
+    				});
         };
 
         this.state.columns = [{
-                key: 'id',
-                name: 'ID',
-                editable: false
-            }, {
-                key: 'name',
-                name: 'Name',
-                editable: true
-            }, {
-                key: 'agent',
-                name: 'Agent',
+                key: 'stock',
+                name: 'Stock',
                 editable: true,
-                getOptions: getOptions
+                getOptions: getStocks,
             }, {
-                key: 'agent.description',
+                key: 'stock.description',
                 name: 'Description'
             }, {
-                key: 'agent.unit',
+                key: 'stock.unit.name',
                 name: 'Unit'
             }, {
+                key: 'quantity',
+                name: 'Qty',
+                editable: true
+            }, {
+                key: 'price',
+                name: 'Price',
+                editable: true
+            } , {
                 key: 'amount',
                 name: 'Amount',
-                editable: true
+                formula: (item) => item.price * item.quantity
             }
         ];
 
-        this.state.customers = [{
-                id: 1,
-                name: 'Ganjah',
-                agent: {
-                    id: 110,
-                    name: 'Gan',
-                    description: 'Ganj description',
-                    unit: 'm'
-                },
-                amount: 100
+        this.state.footers = [{
+                value: "Sum",
+                colSpan: 5
             }, {
-                id: 2,
-                name: 'Aubrey',
-                agent: {
-                    id: 220,
-                    name: 'Aubs',
-                    description: 'Aubs description',
-                    unit: 'km'
-                },
-                amount: 120
-            }, {
-                id: 3,
-                name: 'Dexter',
-                agent: {
-                    id: 330,
-                    name: 'Dex',
-                    description: 'Xc description',
-                    unit: 'cm'
-                },
-                amount: 100
+                formula: (items) => items.reduce((accumulated, value) => accumulated + (value.price * value.quantity), 0)
             }
         ];
     }
 
     componentDidMount() {
         let parameters = {
-            orderedBy: "name",
-            pageSize: 10
+            orderedBy: "documentNo",
+            pageOffset: this.state.pageOffset
         };
 
-        // Fetch.get("customer/", parameters, (customers) => {
-        //     this.setState({customers});
-        // });
-        //
-        // Provider.loadAgents((agents) => this.setState({agents}));
+        Fetch.get("purchaseOrder/view", parameters, (purchaseOrder) => {
+            console.log("On load purchase order", purchaseOrder);
+            this.setState({purchaseOrder});
+        });
+
+        Provider.loadSuppliers((suppliers) => this.setState({suppliers}));
     }
 
+    onSupplierChange(supplier) {
+		    let nextState = this.state.value || {};
+		    nextState.supplier = {id: supplier.value};
+		    this.setState(nextState);
+		}
+
     render() {
+        let { purchaseOrder } = this.state;
+        let supplier = purchaseOrder.supplier;
+        let supplierId = supplier ? supplier.id : null;
+
+				let suppliers = [];
+        if (this.state.suppliers) {
+						suppliers = this.state.suppliers.map((supplier) => {
+								return {value: supplier.id, label: supplier.name};
+						});
+        }
+
         return <div>
             <p>At purchase orders. <Link to="/">Go to home</Link></p>
             <hr />
 
+            <Input name="documentNo" label="Document No." value={purchaseOrder.documentNo} disabled={!this.state.updateMode}
+								onChange={super.onChange.bind(this)} />
+
+            <Dropdown name="supplier" label="Supplier" value={supplierId} disabled={!this.state.updateMode}
+                options={suppliers} onChange={this.onSupplierChange.bind(this)} />
+
+            <Input name="remarks" label="Remarks" value={purchaseOrder.remarks} disabled={!this.state.updateMode}
+								onChange={super.onChange.bind(this)} />
+
+            <br/><br/>
+
             <Datatable
                 columns={this.state.columns}
-                rows={this.state.customers}
-                disabled={false} />
+                rows={purchaseOrder.items}
+                footers={this.state.footers}
+                disabled={!this.state.updateMode} />
 
             <button>Save</button>
             <button>Cancel</button>

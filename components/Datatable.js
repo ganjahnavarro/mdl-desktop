@@ -1,5 +1,9 @@
 import _ from 'lodash'
 import React from 'react'
+
+import Provider from '../core/provider'
+
+import Input from './input'
 import Dropdown from './dropdown'
 
 class Datatable extends React.Component {
@@ -7,13 +11,28 @@ class Datatable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            rows: this.props.rows
+            rows: [],
+            newRowAdded: false
         };
+
+        this.editableColumnIndexes = [];
+        this.props.columns.forEach((col, index) => {
+            if (col.editable) {
+                this.editableColumnIndexes.push(index);
+            }
+        });
+    }
+
+    componentWillReceiveProps() {
+        let nextState = this.state;
+        nextState.rows = this.props.rows;
+        this.setState(nextState);
     }
 
     componentDidMount() {
         $(document).keydown((event) => {
             if ([37, 38, 39, 40].includes(event.keyCode)) {
+                this.onCellFocus = true;
                 if (event.keyCode == 37) this.onKeyLeft();
                 if (event.keyCode == 38) this.onKeyUp();
                 if (event.keyCode == 39) this.onKeyRight();
@@ -23,36 +42,114 @@ class Datatable extends React.Component {
         });
     }
 
-    onKeyLeft() {
-        let { selectedColumnIndex } = this.state;
-        selectedColumnIndex = Math.max(0, selectedColumnIndex - 1);
-        this.setState({selectedColumnIndex});
-    }
-
-    onKeyUp() {
-        let { selectedRowIndex } = this.state;
-        selectedRowIndex = Math.max(0, selectedRowIndex - 1);
-        this.setState({selectedRowIndex});
-    }
-
-    onKeyRight() {
-        let { selectedColumnIndex } = this.state;
-        selectedColumnIndex = Math.min(this.props.columns.length, selectedColumnIndex + 1);
-        this.setState({selectedColumnIndex});
-    }
-
     onKeyDown() {
-        let { selectedRowIndex, stateRows } = this.state;
+        let { selectedColumnIndex, selectedRowIndex } = this.state;
         let rows = this.state.rows || [];
         selectedRowIndex = Math.min(rows.length, selectedRowIndex + 1);
         this.setState({selectedRowIndex});
     }
 
+    onKeyUp() {
+        let { selectedColumnIndex, selectedRowIndex } = this.state;
+        selectedRowIndex = Math.max(0, selectedRowIndex - 1);
+        this.setState({selectedRowIndex});
+    }
+
+    onKeyLeft() {
+        let continueSearch = true;
+        let { selectedColumnIndex, selectedRowIndex } = this.state;
+        let previousSelectedColumnIndex = selectedColumnIndex;
+
+        do {
+            if (this.isFirstColumn(selectedColumnIndex)) {
+                if (this.isFirstRow(selectedRowIndex)) {
+                    continueSearch = false;
+                    selectedColumnIndex = previousSelectedColumnIndex;
+                } else {
+                    selectedRowIndex--;
+                    selectedColumnIndex = this.props.columns.length;
+                }
+            } else {
+                selectedColumnIndex--;
+            }
+
+            if (this.isColumnEditable(selectedColumnIndex)) {
+                continueSearch = false;
+            }
+        }
+        while (continueSearch);
+
+        this.setState({selectedColumnIndex, selectedRowIndex});
+    }
+
+    onKeyRight() {
+        let continueSearch = true;
+        let { selectedColumnIndex, selectedRowIndex, newRowAdded, rows } = this.state;
+        let previousSelectedColumnIndex = selectedColumnIndex;
+
+        do {
+            if (this.isLastColumn(selectedColumnIndex)) {
+                if (this.isLastRow(selectedRowIndex)) {
+                    if (newRowAdded) {
+                        continueSearch = false;
+                        selectedColumnIndex = previousSelectedColumnIndex;
+                    } else {
+                        this.addRow();
+                        selectedRowIndex++;
+                        selectedColumnIndex = 0;
+                    }
+                } else {
+                    selectedRowIndex++;
+                    selectedColumnIndex = 0;
+                }
+            } else {
+                selectedColumnIndex++;
+            }
+
+            if (this.isColumnEditable(selectedColumnIndex)) {
+                continueSearch = false;
+            }
+        }
+        while (continueSearch);
+
+        this.setState({selectedColumnIndex, selectedRowIndex});
+    }
+
+    isFirstColumn(columnIndex) {
+        return columnIndex == 0;
+    }
+
+    isLastColumn(columnIndex) {
+        return this.props.columns.length == columnIndex + 1;
+    }
+
+    isFirstRow(rowIndex) {
+        return rowIndex == 0;
+    }
+
+    isLastRow(rowIndex) {
+        let { rows } = this.state;
+        return rows.length == rowIndex + 1;
+    }
+
+    isColumnEditable(columnIndex) {
+        return this.editableColumnIndexes.includes(columnIndex);
+    }
+
+    addRow() {
+        let rows = this.state.rows;
+        rows.push({});
+        this.setState({rows, newRowAdded: true});
+    }
+
     componentDidUpdate() {
         if (this.selectedInput && this.onCellFocus) {
             this.selectedInput.focus();
-            this.selectedInput.setSelectionRange(0, this.selectedInput.value.length);
             this.onCellFocus = false;
+
+            if (this.selectedInput && this.selectedInput.value) {
+                this.selectedInput.setSelectionRange(0, this.selectedInput.value.length);
+            }
         }
     }
 
@@ -91,36 +188,19 @@ class Datatable extends React.Component {
         let rows = this.state.rows;
         _.set(rows[rowIndex], columnKey, event.target.value);
         this.setState({rows});
+
+        this.onCellFocus = false;
     }
 
-    onDropdownSelect(columnKey, rowIndex, selected) {
-        /* Should not be defined here */
-        let items = [{
-            id: 110,
-            name: 'Gan',
-            description: 'Ganj description',
-            unit: 'm'
-        }, {
-            id: 220,
-            name: 'Aubs',
-            description: 'Aubs description',
-            unit: 'km'
-        }, {
-            id: 330,
-            name: 'Dex',
-            description: 'Xc description',
-            unit: 'cm'
-        }];
-
+    onDropdownSelect(columnIndex, columnKey, rowIndex, selected) {
+        let items = Provider.filteredItems[columnKey];
         let item = items.find((item) => item.id == selected.value);
 
         let rows = this.state.rows;
         _.set(rows[rowIndex], columnKey, item);
         this.setState({rows});
 
-        // let rows = this.state.rows;
-        // _.set(rows[rowIndex], columnKey + ".id", selected.value);
-        // this.setState({rows});
+        this.onCellFocus = false;
 		}
 
     renderCell(column, columnIndex, row, rowIndex) {
@@ -139,27 +219,38 @@ class Datatable extends React.Component {
         };
 
         let cellClassName = selected ? "selected" : null;
-        let cellContent = typeof column.getOptions == "undefined" ? _.get(row, column.key) : _.get(row, column.key).name;
 
-        let tabIndex = this.tabIndex++;
+        let value = column.formula ? column.formula(row) : this.getProperty(row, column.key);
+        let cellContent = typeof column.getOptions != "undefined" && value ? value.name : value;
+
+        if (column.editable) { this.tabIndex++ }
+        let tabIndex = this.tabIndex;
 
         if (selected && !this.props.disabled && column.editable) {
             cellClassName += " editing";
 
-            let inputBasic = <input value={cellContent}
+            let inputBasic = <Input value={cellContent}
                 onChange={(event) => this.onCellEdit(column.key, rowIndex, event)}
                 ref={(input) => {this.selectedInput = input}}
                 tabIndex={tabIndex} />;
 
-            let inputDropdown = <Dropdown value={_.get(row, column.key).id} loadOptions={column.getOptions}
-                onChange={(selected) => this.onDropdownSelect(column.key, rowIndex, selected)} />
+            let onInputKeyDown = (event) => {
+                if (event.keyCode == 9) {
+                    event.preventDefault();
+                    event.shiftKey ? this.onKeyLeft() : this.onKeyRight();
+                }
+            }
+
+            let inputDropdown = <Dropdown value={value ? value.id : null} loadOptions={column.getOptions}
+                onChange={(selected) => this.onDropdownSelect(columnIndex, column.key, rowIndex, selected)}
+                autofocus={true} onInputKeyDown={onInputKeyDown} />
 
             cellContent = typeof column.getOptions == "undefined" ? inputBasic : inputDropdown;
         }
 
         let props = {
             key: column.key,
-            tabIndex: column.editable ? tabIndex : null,
+            tabIndex: !selected && column.editable ? tabIndex : null,
             className: cellClassName,
             onClick: onCellClick,
             onFocus: onCellClick
@@ -170,10 +261,31 @@ class Datatable extends React.Component {
         </td>;
     }
 
+    getFooters() {
+        if (this.props.footers && this.state.rows) {
+          let items = this.props.footers.map((item, index) => {
+              let content = item.formula ? item.formula(this.state.rows) : item.value;
+              return <td key={index} colSpan={item.colSpan}>{content}</td>
+          })
+
+          return <tfoot>
+                <tr>
+                    {items}
+                </tr>
+            </tfoot>;
+        }
+        return null;
+    }
+
+    getProperty(object, key) {
+        return _.get(object, key);
+    }
+
     render() {
         return <table className="table table-bordered">
             {this.getHeaders()}
             {this.getBody()}
+            {this.getFooters()}
         </table>;
     }
 

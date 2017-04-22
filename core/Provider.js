@@ -1,6 +1,8 @@
 import Fetch from './fetch'
 
-let Provider = {};
+let Provider = {
+    filteredItems: {}
+};
 
 Provider.loadAgents = function(callback) {
     let parameters = {
@@ -32,6 +34,30 @@ Provider.loadCategories = function(callback) {
     };
 
     Fetch.get("category/", parameters, (items) => {
+        if (callback) {
+            callback(items);
+        }
+    });
+};
+
+Provider.loadSuppliers = function(callback) {
+    let parameters = {
+        orderedBy: "name"
+    };
+
+    Fetch.get("supplier/", parameters, (items) => {
+        if (callback) {
+            callback(items);
+        }
+    });
+};
+
+Provider.loadStocks = function(callback) {
+    let parameters = {
+        orderedBy: "name"
+    };
+
+    Fetch.get("stock/", parameters, (items) => {
         if (callback) {
             callback(items);
         }
