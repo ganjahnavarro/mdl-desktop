@@ -3,6 +3,8 @@ import {Route, IndexRoute} from 'react-router'
 
 import App from '../App'
 import Home from '../Home'
+import Login from '../Login'
+
 import Units from '../Units'
 import Agents from '../Agents'
 import Customers from '../Customers'
@@ -22,6 +24,8 @@ module.exports = (
     <Route path="/" component={App}>
         <IndexRoute component={Home}/>
         <Route path="/home" component={Home}/>
+        <Route path="/login" component={Login} />
+
         <Route path="/units" component={Units} onEnter={requireAuth}/>
         <Route path="/agents" component={Agents} onEnter={requireAuth}/>
         <Route path="/customers" component={Customers} onEnter={requireAuth}/>

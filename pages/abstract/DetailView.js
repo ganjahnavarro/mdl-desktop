@@ -17,7 +17,6 @@ class Detail extends View {
 
     onDelete() {
 				console.log("on delete id: " + this.props.value.id);
-				let self = this;
 				Fetch.delete(this.endpoint, this.props.value.id, () => this.props.onFetch());
 		}
 

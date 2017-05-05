@@ -75,3 +75,7 @@ table input, table select, table div.Select {
     margin: 0;
     height: 40px;
 }*/
+
+tr.invalid {
+    background-color: rgba(200, 0, 0, 0.1);
+}

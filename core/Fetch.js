@@ -10,7 +10,7 @@ Fetch.get = function(resource, urlParameters, successCallback, errorCallback) {
     let url = BASE_URL + resource + parseQuery(urlParameters);
 
     fetch(url, getDefaultHeaders())
-        .then((response) => handleSuccess(successCallback, response))
+        .then((response) => handleResponse(successCallback, response))
         .catch((error) => handleError(errorCallback, error));
 };
 
@@ -21,7 +21,7 @@ Fetch.post = function(resource, requestBody, successCallback, errorCallback) {
     });
 
     fetch(BASE_URL + resource, headers)
-        .then((response) => handleSuccess(successCallback, response))
+        .then((response) => handleResponse(successCallback, response))
         .catch((error) => handleError(errorCallback, error));
 }
 
@@ -32,7 +32,7 @@ Fetch.patch = function(resource, requestBody, successCallback, errorCallback) {
     });
 
     fetch(BASE_URL + resource, headers)
-        .then((response) => handleSuccess(successCallback, response))
+        .then((response) => handleResponse(successCallback, response))
         .catch((error) => handleError(errorCallback, error));
 }
 
@@ -52,16 +52,17 @@ function getDefaultHeaders() {
     headers.append("Accept", "application/json, text/plain, */*");
     headers.append("Content-Type", "application/json; charset=UTF-8");
     headers.append("Authentication", getAuthenticationHeader());
-
-    return {
-        headers
-    };
+    return { headers };
 }
 
 function getAuthenticationHeader(headers) {
     let username = Store.get("username");
     let password = Store.get("password");
     return "Basic " + Base64.encode(username + ":" + password);
+}
+
+function handleResponse(callback, response) {
+    response.ok ? handleSuccess(callback, response) : handleError(callback, response);
 }
 
 function handleSuccess(successCallback, response) {
@@ -72,11 +73,14 @@ function handleSuccess(successCallback, response) {
     }
 }
 
-function handleError(errorCallback, error) {
-    let message = error.message || error;
-
-    Alert.error(message);
-    if (errorCallback) errorCallback(message);
+function handleError(errorCallback, response) {
+    if (response) {
+        response.json().then((error) => {
+            let message = error.message || error;
+            Alert.error(message);
+            if (errorCallback) errorCallback(message);
+        });
+    }
 }
 
 function parseQuery(urlParameters) {

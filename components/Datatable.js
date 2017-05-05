@@ -1,7 +1,10 @@
 import _ from 'lodash'
+import classNames from 'classnames'
 import React from 'react'
+import ReactDOM from 'react-dom'
 
 import Provider from '../core/provider'
+import Formatter from '../core/formatter'
 
 import Input from './input'
 import Dropdown from './dropdown'
@@ -12,6 +15,7 @@ class Datatable extends React.Component {
         super(props);
         this.state = {
             rows: [],
+            invalidRowIndexes: [],
             newRowAdded: false
         };
 
@@ -23,48 +27,84 @@ class Datatable extends React.Component {
         });
     }
 
-    componentWillReceiveProps() {
-        let nextState = this.state;
-        nextState.rows = this.props.rows;
-        this.setState(nextState);
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.rows) {
+            let nextState = this.state;
+            nextState.rows = nextProps.rows;
+            this.setState(nextState);
+            this.addRow();
+        }
+    }
+
+    getRows() {
+        let { rows, invalidRowIndexes } = this.state;
+        return rows.filter((row) => row.stock != null);
     }
 
     componentDidMount() {
         $(document).keydown((event) => {
-            if ([37, 38, 39, 40].includes(event.keyCode)) {
+            let navigateX = [37, 39].includes(event.keyCode);
+            let navigateY = [38, 40].includes(event.keyCode) && !this.isSelecting();
+
+            if (navigateX || navigateY) {
                 this.onCellFocus = true;
-                if (event.keyCode == 37) this.onKeyLeft();
-                if (event.keyCode == 38) this.onKeyUp();
-                if (event.keyCode == 39) this.onKeyRight();
-                if (event.keyCode == 40) this.onKeyDown();
+                if (event.keyCode == 37) this.onArrowLeft();
+                if (event.keyCode == 38) this.onArrowUp();
+                if (event.keyCode == 39) this.onArrowRight();
+                if (event.keyCode == 40) this.onArrowDown();
                 return false;
             }
         });
     }
 
-    onKeyDown() {
+    isSelecting() {
+        let element = ReactDOM.findDOMNode(this.selectedDropdown);
+
+        if (element) {
+            let select = element.getElementsByClassName("Select");
+            let hasClass = (element, className) => {
+                return (' ' + element.className + ' ').indexOf(' ' + className + ' ') > -1;
+            }
+            return hasClass(select[0], "is-open") && hasClass(select[0], "is-focused");
+        }
+    }
+
+    onArrowDown() {
         let { selectedColumnIndex, selectedRowIndex } = this.state;
+        let previousSelectedRowIndex = selectedRowIndex;
+
         let rows = this.state.rows || [];
         selectedRowIndex = Math.min(rows.length, selectedRowIndex + 1);
-        this.setState({selectedRowIndex});
+        this.setState({
+            invalidRowIndexes: this.getInvalidRowIndexes(previousSelectedRowIndex),
+            selectedRowIndex
+        });
     }
 
-    onKeyUp() {
+    onArrowUp() {
         let { selectedColumnIndex, selectedRowIndex } = this.state;
+        let previousSelectedRowIndex = selectedRowIndex;
+
         selectedRowIndex = Math.max(0, selectedRowIndex - 1);
-        this.setState({selectedRowIndex});
+        this.setState({
+            invalidRowIndexes: this.getInvalidRowIndexes(previousSelectedRowIndex),
+            selectedRowIndex
+        });
     }
 
-    onKeyLeft() {
+    onArrowLeft() {
         let continueSearch = true;
-        let { selectedColumnIndex, selectedRowIndex } = this.state;
-        let previousSelectedColumnIndex = selectedColumnIndex;
+        let { selectedColumnIndex, selectedRowIndex, invalidRowIndexes } = this.state;
+        let previousSelectedRowIndex = selectedRowIndex;
 
         do {
             if (this.isFirstColumn(selectedColumnIndex)) {
                 if (this.isFirstRow(selectedRowIndex)) {
                     continueSearch = false;
-                    selectedColumnIndex = previousSelectedColumnIndex;
+                    selectedColumnIndex = null;
+                    selectedRowIndex = null;
+                    this.onCellFocus = false;
+                    this.props.lastInput.focus();
                 } else {
                     selectedRowIndex--;
                     selectedColumnIndex = this.props.columns.length;
@@ -74,25 +114,29 @@ class Datatable extends React.Component {
             }
 
             if (this.isColumnEditable(selectedColumnIndex)) {
+                invalidRowIndexes = this.getInvalidRowIndexes(previousSelectedRowIndex);
                 continueSearch = false;
             }
         }
         while (continueSearch);
 
-        this.setState({selectedColumnIndex, selectedRowIndex});
+        this.setState({selectedColumnIndex, selectedRowIndex, invalidRowIndexes});
     }
 
-    onKeyRight() {
+    onArrowRight() {
         let continueSearch = true;
-        let { selectedColumnIndex, selectedRowIndex, newRowAdded, rows } = this.state;
-        let previousSelectedColumnIndex = selectedColumnIndex;
+        let { selectedColumnIndex, selectedRowIndex, newRowAdded, rows, invalidRowIndexes } = this.state;
+        let previousSelectedRowIndex = selectedRowIndex;
 
         do {
             if (this.isLastColumn(selectedColumnIndex)) {
                 if (this.isLastRow(selectedRowIndex)) {
                     if (newRowAdded) {
                         continueSearch = false;
-                        selectedColumnIndex = previousSelectedColumnIndex;
+                        selectedColumnIndex = null;
+                        selectedRowIndex = null;
+                        this.onCellFocus = false;
+                        this.props.firstInput.focus();
                     } else {
                         this.addRow();
                         selectedRowIndex++;
@@ -107,12 +151,29 @@ class Datatable extends React.Component {
             }
 
             if (this.isColumnEditable(selectedColumnIndex)) {
+                invalidRowIndexes = this.getInvalidRowIndexes(previousSelectedRowIndex);
                 continueSearch = false;
             }
         }
         while (continueSearch);
 
-        this.setState({selectedColumnIndex, selectedRowIndex});
+        this.setState({selectedColumnIndex, selectedRowIndex, invalidRowIndexes});
+    }
+
+    selectFirstCell() {
+        this.onCellFocus = true;
+        this.setState({
+            selectedRowIndex: 0,
+            selectedColumnIndex: -1
+        }, () => this.onArrowRight());
+    }
+
+    onKeyDown(event) {
+        if (event.keyCode == 9) {
+            event.preventDefault();
+            this.onCellFocus = true;
+            event.shiftKey ? this.onArrowLeft() : this.onArrowRight();
+        }
     }
 
     isFirstColumn(columnIndex) {
@@ -137,19 +198,18 @@ class Datatable extends React.Component {
     }
 
     addRow() {
-        let rows = this.state.rows;
-        rows.push({});
-        this.setState({rows, newRowAdded: true});
+        if (!this.state.newRowAdded) {
+            let rows = this.state.rows;
+            rows.push({});
+            this.setState({rows, newRowAdded: true});
+        }
     }
 
     componentDidUpdate() {
         if (this.selectedInput && this.onCellFocus) {
             this.selectedInput.focus();
+            this.selectedInput.highlight();
             this.onCellFocus = false;
-
-            if (this.selectedInput && this.selectedInput.value) {
-                this.selectedInput.setSelectionRange(0, this.selectedInput.value.length);
-            }
         }
     }
 
@@ -158,7 +218,10 @@ class Datatable extends React.Component {
 
         let columns = this.props.columns.map((column) => <th key={column.key}>{column.name}</th>);
         return <thead>
-            <tr>{columns}</tr>
+            <tr>
+                {this.props.allowedDelete && !this.props.disabled ? <th></th> : null}
+                {columns}
+            </tr>
         </thead>;
     }
 
@@ -173,15 +236,34 @@ class Datatable extends React.Component {
     }
 
     getRow(row, rowIndex) {
-        let { selectedRowIndex } = this.state;
+        let { selectedRowIndex, invalidRowIndexes } = this.state;
         let cells = this.props.columns.map((column, columnIndex) => {
             return this.renderCell(column, columnIndex, row, rowIndex);
         });
 
-        let rowClassName = rowIndex == selectedRowIndex ? "selected" : null;
+        let rowClassName = classNames({
+            selected: rowIndex == selectedRowIndex,
+            invalid: invalidRowIndexes.includes(rowIndex)
+        });
+
         return <tr key={rowIndex} className={rowClassName}>
+            {this.getDeleteCell(rowIndex)}
             {cells}
         </tr>;
+    }
+
+    getDeleteCell(rowIndex) {
+        if (this.props.allowedDelete && !this.props.disabled) {
+            let deleteClick = () => {
+                this.state.rows.splice(rowIndex, 1);
+                this.forceUpdate();
+            };
+
+            return <td>
+                <a onClick={deleteClick}>delete</a>
+            </td>;
+        }
+        return null;
     }
 
     onCellEdit(columnKey, rowIndex, event) {
@@ -190,18 +272,44 @@ class Datatable extends React.Component {
         this.setState({rows});
 
         this.onCellFocus = false;
+        this.onRowsChange(rows);
     }
 
-    onDropdownSelect(columnIndex, columnKey, rowIndex, selected) {
-        let items = Provider.filteredItems[columnKey];
-        let item = items.find((item) => item.id == selected.value);
+    onStockSelect(columnIndex, columnKey, rowIndex, selected) {
+        let stocks = Provider.filteredItems[columnKey];
+        let stock = stocks.find((stock) => stock.id == selected.value);
 
         let rows = this.state.rows;
-        _.set(rows[rowIndex], columnKey, item);
-        this.setState({rows});
+        let row = rows[rowIndex];
 
-        this.onCellFocus = false;
+        _.set(row, columnKey, stock);
+
+        this.props.columns.forEach((column) => {
+            if (column.getDefaultValue) {
+                let existingValue = this.getProperty(row, column);
+                if (!existingValue) {
+                    let isFunction = typeof column.getDefaultValue == "function";
+                    let defaultValue = isFunction ? column.getDefaultValue(stock) : column.getDefaultValue;
+                    _.set(row, column.key, defaultValue);
+                }
+            }
+        });
+
+        this.onCellFocus = true;
+
+        this.setState({
+            newRowAdded: rowIndex + 1 != rows.length,
+            rows
+        }, () => this.onArrowRight());
+
+        this.onRowsChange(rows);
 		}
+
+    onRowsChange(rows) {
+        if (this.props.onRowsChange) {
+            setTimeout(() => this.props.onRowsChange(rows), 1);
+        }
+    }
 
     renderCell(column, columnIndex, row, rowIndex) {
         let { selectedRowIndex, selectedColumnIndex } = this.state;
@@ -210,17 +318,19 @@ class Datatable extends React.Component {
         let onCellClick = () => {
             if (!selected) {
                 this.onCellFocus = true;
+                let invalidRowIndexes = selectedRowIndex ? this.getInvalidRowIndexes(selectedRowIndex) : [];
 
                 this.setState({
                     selectedColumnIndex: columnIndex,
-                    selectedRowIndex: rowIndex
+                    selectedRowIndex: rowIndex,
+                    invalidRowIndexes
                 });
             }
         };
 
         let cellClassName = selected ? "selected" : null;
 
-        let value = column.formula ? column.formula(row) : this.getProperty(row, column.key);
+        let value = column.formula ? this.getFormulaValue(column, row) : this.getProperty(row, column);
         let cellContent = typeof column.getOptions != "undefined" && value ? value.name : value;
 
         if (column.editable) { this.tabIndex++ }
@@ -231,21 +341,18 @@ class Datatable extends React.Component {
 
             let inputBasic = <Input value={cellContent}
                 onChange={(event) => this.onCellEdit(column.key, rowIndex, event)}
+                onKeyDown={(event) => this.onKeyDown(event)}
                 ref={(input) => {this.selectedInput = input}}
                 tabIndex={tabIndex} />;
 
-            let onInputKeyDown = (event) => {
-                if (event.keyCode == 9) {
-                    event.preventDefault();
-                    event.shiftKey ? this.onKeyLeft() : this.onKeyRight();
-                }
-            }
-
             let inputDropdown = <Dropdown value={value ? value.id : null} loadOptions={column.getOptions}
-                onChange={(selected) => this.onDropdownSelect(columnIndex, column.key, rowIndex, selected)}
-                autofocus={true} onInputKeyDown={onInputKeyDown} />
+                onChange={(selected) => this.onStockSelect(columnIndex, column.key, rowIndex, selected)}
+                autofocus={true} onInputKeyDown={(event) => this.onKeyDown(event)}
+                ref={(input) => {this.selectedDropdown = input}} />
 
             cellContent = typeof column.getOptions == "undefined" ? inputBasic : inputDropdown;
+        } else {
+            cellContent = column.type ? Formatter.format(column.type, cellContent) : cellContent;
         }
 
         let props = {
@@ -261,31 +368,70 @@ class Datatable extends React.Component {
         </td>;
     }
 
-    getFooters() {
-        if (this.props.footers && this.state.rows) {
-          let items = this.props.footers.map((item, index) => {
-              let content = item.formula ? item.formula(this.state.rows) : item.value;
-              return <td key={index} colSpan={item.colSpan}>{content}</td>
-          })
-
-          return <tfoot>
-                <tr>
-                    {items}
-                </tr>
-            </tfoot>;
-        }
-        return null;
+    getFormulaValue(column, argument) {
+        let value = column.formula(argument);
+        return Formatter.formatAmount(value);
     }
 
-    getProperty(object, key) {
-        return _.get(object, key);
+    getProperty(row, column) {
+        return _.get(row, column.key);
+    }
+
+    revalidateAndGetInvalidRowIndexes() {
+        let invalidRowIndexes = [];
+
+        console.log("revalidateAndGetInvalidRowIndexes");
+        console.log(this.state.rows);
+
+        this.state.rows.forEach((row, rowIndex) => {
+            invalidRowIndexes = this.validateRow(rowIndex, invalidRowIndexes);
+        });
+        this.setState({invalidRowIndexes});
+        return invalidRowIndexes;
+    }
+
+    getInvalidRowIndexes(rowIndex) {
+        return this.validateRow(rowIndex, this.state.invalidRowIndexes);
+    }
+
+    validateRow(rowIndex, invalidRowIndexes) {
+        let valid = true;
+        let row = this.state.rows[rowIndex];
+
+        let index = invalidRowIndexes.indexOf(rowIndex);
+        if (index > -1) {
+            invalidRowIndexes.splice(index, 1);
+        }
+
+        let lastRow = rowIndex == this.state.rows.length - 1;
+        let emptyAllCell = true;
+
+        this.props.columns.forEach((column) => {
+            if (column.required) {
+                let value = this.getProperty(row, column);
+
+                if (!value) {
+                    valid = false;
+                } else {
+                    emptyAllCell = false;
+                }
+
+                if (["number", "amount"].includes(column.type) && isNaN(value)) {
+                    valid = false;
+                }
+            }
+        });
+
+        if (!(lastRow && emptyAllCell) && !valid) {
+            invalidRowIndexes.push(rowIndex);
+        }
+        return invalidRowIndexes;
     }
 
     render() {
         return <table className="table table-bordered">
             {this.getHeaders()}
             {this.getBody()}
-            {this.getFooters()}
         </table>;
     }
 

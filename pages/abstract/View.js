@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React from 'react'
 
 class View extends React.Component {
@@ -8,8 +9,8 @@ class View extends React.Component {
     }
 
     onChange(event) {
-		    var nextState = {};
-		    nextState[event.target.name] = event.target.value;
+		    let nextState = this.state;
+        _.set(nextState, event.target.name, event.target.value);
 		    this.setState(nextState);
 		}
 
