@@ -67,8 +67,13 @@ function handleResponse(callback, response) {
 
 function handleSuccess(successCallback, response) {
     if (response && successCallback) {
-        response.json().then(function(value) {
-            successCallback(value);
+        response.text().then((text) => {
+            try {
+                let value = JSON.parse(text);
+                successCallback(value);
+            } catch(err) {
+                successCallback(null);
+            }
         });
     }
 }

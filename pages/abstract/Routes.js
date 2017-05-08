@@ -22,7 +22,9 @@ function requireAuth(nextState, replaceState) {
 
 module.exports = (
     <Route path="/" component={App}>
+        // <IndexRoute component={Login}/>
         <IndexRoute component={Home}/>
+
         <Route path="/home" component={Home}/>
         <Route path="/login" component={Login} />
 

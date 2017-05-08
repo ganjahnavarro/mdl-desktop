@@ -6,7 +6,7 @@ class Home extends View {
 
 		render() {
 		    return <div>
-						<p>At home</p>
+						<p>At home. <Link to="/">logout</Link></p>
 						<p><Link to="/units"> -> units</Link></p>
 						<p><Link to="/categories"> -> categories</Link></p>
 						<p><Link to="/stocks"> -> stocks</Link></p>

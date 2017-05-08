@@ -13,27 +13,37 @@ todo!
 [x] highlight content on focus
 [x] total amount
 [x] form validation (documentNo, supplier etc.)
-[ ] date mask
 
 [x] delete
 [x] create
+
+[x] electronize
+
+-- 2017 05 08
+
+[x] login
+[x] no results
+
+[ ] initial ui design
+
+
 [ ] update
-
 [ ] navigation
--- [ ] search
-
-[ ] login
 
 [ ] sales orders
 [ ] counters
-[ ] etc
+[ ] additional fields
+[ ] date mask
 
 [ ] reports screens
 [ ] pdf printout (PO, SO, lists)
 
-[x] electronize
-[ ] ui design
 
+
+
+-- nice to haves
+
+[ ] search
 [ ] hotkeys
     - alt s   -> Save
     - alt d   -> Delete Row / Delete Item

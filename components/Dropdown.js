@@ -10,6 +10,7 @@ class Dropdown extends React.Component {
 
         let props = Object.assign({}, this.props);
 				props.clearable = false;
+				props.matchPos = "start"
         delete props.label;
 
 				let asyncSelect = typeof this.props.loadOptions != "undefined";

@@ -21,7 +21,7 @@ class PurchaseOrders extends View {
 
         this.state.totalAmount = 0;
         this.state.pageOffset = 0;
-        this.state.purchaseOrder = {};
+        this.state.purchaseOrder = null;
 
         let getStocks = (input, callback) => {
 
@@ -127,24 +127,35 @@ class PurchaseOrders extends View {
 
     onCancel() {
         console.log("Cancelling..");
-        this.setState({updateMode: null});
+        this.setState({
+            purchaseOrder: this.state.previousPurchaseOrder,
+            updateMode: null
+        });
     }
 
     onAdd() {
         console.log("Adding..");
-        let purchaseOrder = {
-            items: []
-        };
+        let purchaseOrder = {};
+        let items = [{}];
 
         this.setState({
+            totalAmount: 0,
             updateMode: "CREATE",
-            purchaseOrder
+            purchaseOrder,
+            items
         }, () => this.firstInput.focus());
     }
 
     onEdit() {
         console.log("Editing..");
-        this.setState({updateMode: "UPDATE"});
+
+        let { purchaseOrder, items } = this.state;
+        this.updateTotalAmount(items);
+
+        this.setState({
+            updateMode: "UPDATE",
+            purchaseOrder
+        }, () => this.firstInput.focus());
     }
 
     onDelete() {
@@ -159,7 +170,19 @@ class PurchaseOrders extends View {
         };
 
         Fetch.get("purchaseOrder/view", parameters, (purchaseOrder) => {
-            this.setState({purchaseOrder});
+            let items = null;
+            if (purchaseOrder) {
+                items = purchaseOrder.items;
+                items.push({});
+            }
+
+            this.setState({
+                items,
+                purchaseOrder,
+                previousPurchaseOrder: purchaseOrder
+            });
+
+            this.updateTotalAmount(items);
         });
     }
 
@@ -171,29 +194,66 @@ class PurchaseOrders extends View {
     }
 
     updateTotalAmount(rows) {
+        let totalAmount = 0;
         if (rows) {
-            let totalAmount = rows.reduce((accumulated, value) => {
+            totalAmount = rows.reduce((accumulated, value) => {
                 let current = value.price && value.quantity ? value.price * value.quantity : 0;
                 return accumulated + current;
             }, 0);
-
-            this.setState({totalAmount});
         }
+        this.setState({totalAmount});
     }
 
-    render() {
-        let { purchaseOrder, suppliers, updateMode, totalAmount } = this.state;
+    renderPlaceholder() {
+        return <p>No result</p>;
+    }
+
+    renderPurchaseOrder() {
+        let { purchaseOrder, suppliers, totalAmount, items } = this.state;
 
         let supplier = purchaseOrder.supplier;
         let supplierId = supplier ? supplier.id : null;
 
-				let supplierItems = [];
+        let supplierItems = [];
         if (suppliers) {
-						supplierItems = suppliers.map((supplier) => {
-								return {value: supplier.id, label: supplier.name};
-						});
+            supplierItems = suppliers.map((supplier) => {
+                return {value: supplier.id, label: supplier.name};
+            });
         }
 
+        return <div>
+            <Input ref={(input) => {this.firstInput = input}} autoFocus="true"
+                name="purchaseOrder.documentNo"
+                label="Document No." value={purchaseOrder.documentNo} disabled={!this.state.updateMode}
+                onChange={super.onChange.bind(this)} />
+
+            <Input name="purchaseOrder.date" placeholder="MM/dd/yyyy"
+                label="Date" value={purchaseOrder.date} disabled={!this.state.updateMode}
+                onChange={super.onChange.bind(this)} />
+
+            <Dropdown name="supplier" label="Supplier" value={supplierId} disabled={!this.state.updateMode}
+                options={supplierItems} onChange={(value) => this.onSupplierChange(value)} />
+
+            <Input ref={(input) => {this.lastInput = input}}
+                name="purchaseOrder.remarks" label="Remarks" value={purchaseOrder.remarks} disabled={!this.state.updateMode}
+                onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)} />
+
+            <Input name="totalAmount" label="Total Amount" value={Formatter.formatAmount(totalAmount)} disabled={true} />
+
+            <br/><br/>
+
+            <Datatable
+                columns={this.state.columns}
+                rows={items} footers={this.state.footers}
+                disabled={!this.state.updateMode} allowedDelete={true}
+                ref={(table) => { this.purchaseOrderItemsTable = table; }}
+                onRowsChange={(rows) => this.updateTotalAmount(rows)}
+                firstInput={this.firstInput} lastInput={this.lastInput} />
+        </div>;
+    }
+
+    render() {
+        let { purchaseOrder, updateMode } = this.state;
         let actionButtons = null;
 
         if (updateMode) {
@@ -202,9 +262,11 @@ class PurchaseOrders extends View {
                 <Button onClick={() => this.onCancel()}>Cancel</Button>
             </div>;
         } else {
+            let editButton = purchaseOrder ? <Button onClick={() => this.onEdit()}>Edit</Button> : null;
+
             actionButtons = <div>
                 <Button onClick={() => this.onAdd()}>Add</Button>
-                <Button onClick={() => this.onEdit()}>Edit</Button>
+                {editButton}
                 <Button onClick={() => this.onDelete()}>Delete</Button>
             </div>
         }
@@ -213,35 +275,8 @@ class PurchaseOrders extends View {
             <p>At purchase orders. <Link to="/">Go to home</Link></p>
             <hr />
 
-            <Input ref={(input) => {this.firstInput = input}} autoFocus="true"
-                name="purchaseOrder.documentNo"
-                label="Document No." value={purchaseOrder.documentNo} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
-
-            <Input name="purchaseOrder.date" placeholder="MM/dd/yyyy"
-                label="Date" value={purchaseOrder.date} disabled={!this.state.updateMode}
-    						onChange={super.onChange.bind(this)} />
-
-            <Dropdown name="supplier" label="Supplier" value={supplierId} disabled={!this.state.updateMode}
-                options={supplierItems} onChange={(value) => this.onSupplierChange(value)} />
-
-            <Input ref={(input) => {this.lastInput = input}}
-                name="purchaseOrder.remarks" label="Remarks" value={purchaseOrder.remarks} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)} />
-
-            <Input name="totalAmount" label="Total Amount" value={Formatter.formatAmount(totalAmount)} disabled={true} />
-
-            <br/><br/>
-
-            <Datatable
-                columns={this.state.columns}
-                rows={purchaseOrder.items} footers={this.state.footers}
-                disabled={!this.state.updateMode} allowedDelete={true}
-                ref={(table) => { this.purchaseOrderItemsTable = table; }}
-                onRowsChange={(rows) => this.updateTotalAmount(rows)}
-                firstInput={this.firstInput} lastInput={this.lastInput} />
-
-              {actionButtons}
+            {this.state.purchaseOrder ? this.renderPurchaseOrder() : this.renderPlaceholder()}
+            {actionButtons}
         </div>;
     }
 

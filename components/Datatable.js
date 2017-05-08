@@ -29,10 +29,14 @@ class Datatable extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.rows) {
+            console.log("componentWillReceiveProps", nextProps.rows);
+
             let nextState = this.state;
+            // nextState.rows = JSON.parse(JSON.stringify(nextProps.rows));
             nextState.rows = nextProps.rows;
+            // nextState.newRowAdded = false;
             this.setState(nextState);
-            this.addRow();
+            // this.addRow();
         }
     }
 
@@ -278,6 +282,8 @@ class Datatable extends React.Component {
     onStockSelect(columnIndex, columnKey, rowIndex, selected) {
         let stocks = Provider.filteredItems[columnKey];
         let stock = stocks.find((stock) => stock.id == selected.value);
+
+        // console.log("On stock select: ")
 
         let rows = this.state.rows;
         let row = rows[rowIndex];
