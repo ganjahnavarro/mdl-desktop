@@ -19,13 +19,12 @@ todo!
 
 [x] electronize
 
--- 2017 05 08
-
 [x] login
 [x] no results
 
-[ ] initial ui design
+-- 2017 05 08
 
+[ ] initial ui design
 
 [ ] update
 [ ] navigation

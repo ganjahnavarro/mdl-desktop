@@ -1,0 +1,72 @@
+.dashboard {
+    padding-top: 1em;
+}
+
+.dashboard .group {
+    background-color: whitesmoke;
+    margin: 0 0 1em 0;
+    padding: 1.5em 1em;
+    border-radius: 0.5em;
+}
+
+.dashboard .card p {
+    color: black;
+    font-size: 125%;
+    padding: 0.75em;
+}
+
+.ui.menu {
+    padding-top: 1em;
+}
+
+.ui.dimmer.active {
+    background: none;
+}
+
+.ui.dimmer.active .ui.loader {
+    color: dodgerblue;
+}
+
+.ui.dimmer.active .ui.loader:before {
+    border-color: dodgerblue;
+}
+
+.container .ui.divider {
+    margin: 2rem 0rem;
+}
+
+.actions button.ui.button {
+    margin-left: 0.5em;
+    margin-right: 0;
+}
+
+.actions {
+    margin-top: 2.5em;
+    float: right;
+}
+
+.audit {
+    margin-top: 2.5em;
+    float: left;
+}
+
+.ui.form .disabled.fields .field, .ui.form .disabled.field, .ui.form .field :disabled, .Select.is-disabled > .Select-control {
+    background-color: gainsboro;
+    opacity: 0.45;
+}
+
+.ui.table tbody tr.selected {
+    background-color: whitesmoke;
+}
+
+.ui.table tbody tr td.selected {
+    background-color: gainsboro;
+}
+
+.ui.table tbody tr td.editing {
+    padding: 0;
+}
+
+.ui.icon.buttons .button, .ui.icon.button {
+    padding: 0.25rem;
+}

@@ -24,6 +24,7 @@ class Input extends React.Component {
 		}
 
 		render() {
+				let label = this.props.label;
 				let props = Object.assign({}, this.props);
 
 				if (typeof props.defaultValue == "undefined") {
@@ -31,8 +32,8 @@ class Input extends React.Component {
 				}
 				delete props.label;
 
-		    return <div>
-						<p>{this.props.label}</p>
+		    return <div className="field">
+						{label ? <label>{label}</label> : null}
 						<input ref={(input) => {this.selectedInput = input}}
 								{...props} />
 				</div>

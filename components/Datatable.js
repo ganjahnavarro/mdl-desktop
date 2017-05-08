@@ -7,6 +7,7 @@ import Provider from '../core/provider'
 import Formatter from '../core/formatter'
 
 import Input from './input'
+import Button from './button'
 import Dropdown from './dropdown'
 
 class Datatable extends React.Component {
@@ -29,14 +30,10 @@ class Datatable extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.rows) {
-            console.log("componentWillReceiveProps", nextProps.rows);
-
             let nextState = this.state;
-            // nextState.rows = JSON.parse(JSON.stringify(nextProps.rows));
             nextState.rows = nextProps.rows;
-            // nextState.newRowAdded = false;
+            nextState.newRowAdded = true;
             this.setState(nextState);
-            // this.addRow();
         }
     }
 
@@ -223,8 +220,8 @@ class Datatable extends React.Component {
         let columns = this.props.columns.map((column) => <th key={column.key}>{column.name}</th>);
         return <thead>
             <tr>
-                {this.props.allowedDelete && !this.props.disabled ? <th></th> : null}
                 {columns}
+                {this.props.allowedDelete && !this.props.disabled ? <th width={55}></th> : null}
             </tr>
         </thead>;
     }
@@ -251,8 +248,8 @@ class Datatable extends React.Component {
         });
 
         return <tr key={rowIndex} className={rowClassName}>
-            {this.getDeleteCell(rowIndex)}
             {cells}
+            {this.getDeleteCell(rowIndex)}
         </tr>;
     }
 
@@ -264,7 +261,7 @@ class Datatable extends React.Component {
             };
 
             return <td>
-                <a onClick={deleteClick}>delete</a>
+                <Button icon="trash" className="ui icon button mini" data-tooltip="Remove Item" onClick={deleteClick}></Button>
             </td>;
         }
         return null;
@@ -282,8 +279,6 @@ class Datatable extends React.Component {
     onStockSelect(columnIndex, columnKey, rowIndex, selected) {
         let stocks = Provider.filteredItems[columnKey];
         let stock = stocks.find((stock) => stock.id == selected.value);
-
-        // console.log("On stock select: ")
 
         let rows = this.state.rows;
         let row = rows[rowIndex];
@@ -435,7 +430,7 @@ class Datatable extends React.Component {
     }
 
     render() {
-        return <table className="table table-bordered">
+        return <table className="ui celled table">
             {this.getHeaders()}
             {this.getBody()}
         </table>;

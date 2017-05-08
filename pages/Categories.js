@@ -7,6 +7,7 @@ import DetailView from './abstract/DetailView'
 
 import Input from '../components/input'
 import Audit from '../components/Audit'
+import Header from '../components/header'
 
 
 class Categories extends ListView {
@@ -24,19 +25,24 @@ class Categories extends ListView {
 						items = this.state.items.map(this.renderItem.bind(this));
 				}
 
-		    return <div>
-						<p>At categories. <Link to="/">Go to home</Link></p>
-						<hr />
+				return <div>
+						<Header />
+						<div className="ui grid">
+								<div className="five wide column ui form">
+										<Input label="Search" value={this.state.filter} name="filter"
+													onChange={this.onFilter.bind(this)} placeholder="Type here to search" />
 
-						<p>Search</p>
-						<Input value={this.state.filter} onChange={this.onFilter.bind(this)} /> <br/>
-						<hr />
+										<div className="ui divider"></div>
+										<ul className="ui list">
+												{items}
+										</ul>
+								</div>
 
-						{items}
-						<hr />
-
-						<Category value={selectedItem} onFetch={this.onFetch}/>
-		    </div>
+								<div className="eleven wide column">
+										<Category value={selectedItem} onFetch={this.onFetch}/>
+								</div>
+						</div>
+		    </div>;
 		}
 }
 
@@ -48,13 +54,17 @@ class Category extends DetailView {
     }
 
 		render() {
-		    return <div>
-						<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
-								name="name" value={this.state.value.name} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
+				return <div>
+						<div className="ui form">
+								<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
+										name="name" value={this.state.value.name} disabled={!this.state.updateMode}
+										onChange={super.onChange.bind(this)} />
+						</div>
 
-            <Audit value={this.state.value} />
-						{super.getActions()}
+						<div>
+								<Audit value={this.state.value} />
+								{super.getActions()}
+						</div>
 		    </div>
 		}
 }

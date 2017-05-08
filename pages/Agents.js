@@ -7,6 +7,7 @@ import DetailView from './abstract/DetailView'
 
 import Input from '../components/input'
 import Audit from '../components/Audit'
+import Header from '../components/header'
 
 
 class Agents extends ListView {
@@ -24,19 +25,24 @@ class Agents extends ListView {
 						items = this.state.items.map(this.renderItem.bind(this));
 				}
 
-		    return <div>
-						<p>At agents. <Link to="/">Go to home</Link></p>
-						<hr />
+				return  <div>
+						<Header />
+						<div className="ui grid">
+								<div className="five wide column ui form">
+										<Input label="Search" value={this.state.filter} name="filter"
+													onChange={this.onFilter.bind(this)} placeholder="Type here to search" />
 
-						<p>Search</p>
-						<Input value={this.state.filter} onChange={this.onFilter.bind(this)} /> <br/>
-						<hr />
+										<div className="ui divider"></div>
+										<ul className="ui list">
+												{items}
+										</ul>
+								</div>
 
-						{items}
-						<hr />
-
-						<Agent value={selectedItem} onFetch={this.onFetch}/>
-		    </div>
+								<div className="eleven wide column">
+										<Agent value={selectedItem} onFetch={this.onFetch}/>
+								</div>
+						</div>
+		    </div>;
 		}
 }
 
@@ -50,23 +56,27 @@ class Agent extends DetailView {
 		render() {
 				let value = this.state.value;
 
-		    return <div>
-						<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
-								name="name" value={this.state.value.name} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
+				return <div>
+						<div className="ui form">
+								<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
+										name="name" value={this.state.value.name} disabled={!this.state.updateMode}
+										onChange={super.onChange.bind(this)} />
 
-						<Input name="address" label="Address" value={this.state.value.address} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
+								<Input name="address" label="Address" value={this.state.value.address} disabled={!this.state.updateMode}
+										onChange={super.onChange.bind(this)} />
 
-						<Input name="contact" label="Contact" value={this.state.value.contact} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
+								<Input name="contact" label="Contact" value={this.state.value.contact} disabled={!this.state.updateMode}
+										onChange={super.onChange.bind(this)} />
 
-						<Input name="tin" label="TIN" value={this.state.value.tin} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
+								<Input name="tin" label="TIN" value={this.state.value.tin} disabled={!this.state.updateMode}
+										onChange={super.onChange.bind(this)} />
+						</div>
 
-            <Audit value={value} />
-						{super.getActions()}
-		    </div>
+						<div>
+								<Audit value={value} />
+								{super.getActions()}
+						</div>
+			 </div>
 		}
 }
 

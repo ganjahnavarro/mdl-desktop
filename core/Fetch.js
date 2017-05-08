@@ -6,7 +6,10 @@ import Alert from './alert'
 
 let Fetch = {};
 
+// $("#loadingPanel").removeClass("active");
+
 Fetch.get = function(resource, urlParameters, successCallback, errorCallback) {
+    preFetch();
     let url = BASE_URL + resource + parseQuery(urlParameters);
 
     fetch(url, getDefaultHeaders())
@@ -15,6 +18,7 @@ Fetch.get = function(resource, urlParameters, successCallback, errorCallback) {
 };
 
 Fetch.post = function(resource, requestBody, successCallback, errorCallback) {
+    preFetch();
     let headers = Object.assign({}, getDefaultHeaders(), {
         method: "POST",
         body: JSON.stringify(requestBody)
@@ -26,6 +30,7 @@ Fetch.post = function(resource, requestBody, successCallback, errorCallback) {
 }
 
 Fetch.patch = function(resource, requestBody, successCallback, errorCallback) {
+    preFetch();
     let headers = Object.assign({}, getDefaultHeaders(), {
         method: "PATCH",
         body: JSON.stringify(requestBody)
@@ -37,6 +42,7 @@ Fetch.patch = function(resource, requestBody, successCallback, errorCallback) {
 }
 
 Fetch.delete = function(resource, id, successCallback, errorCallback) {
+    preFetch();
     let url = BASE_URL + resource + id;
     let headers = Object.assign({}, getDefaultHeaders(), {
         method: "DELETE"
@@ -47,22 +53,24 @@ Fetch.delete = function(resource, id, successCallback, errorCallback) {
         .catch((error) => handleError(errorCallback, error));
 }
 
+function preFetch() {
+    $("#loadingPanel").addClass("active");
+}
+
+function postFetch() {
+    $("#loadingPanel").removeClass("active");
+}
+
 function getDefaultHeaders() {
     let headers = new Headers();
     headers.append("Accept", "application/json, text/plain, */*");
     headers.append("Content-Type", "application/json; charset=UTF-8");
-    headers.append("Authentication", getAuthenticationHeader());
     return { headers };
-}
-
-function getAuthenticationHeader(headers) {
-    let username = Store.get("username");
-    let password = Store.get("password");
-    return "Basic " + Base64.encode(username + ":" + password);
 }
 
 function handleResponse(callback, response) {
     response.ok ? handleSuccess(callback, response) : handleError(callback, response);
+    postFetch();
 }
 
 function handleSuccess(successCallback, response) {

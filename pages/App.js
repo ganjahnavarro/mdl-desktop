@@ -6,15 +6,18 @@ import View from './abstract/View'
 class App extends View {
 
     constructor(props) {
-        Store.set("username", "admin");
-        Store.set("password", 1234);
-
         super(props);
     }
 
     render() {
         return <div>
-            {this.props.children}
+            <div className="ui container">
+                {this.props.children}
+            </div>
+
+            <div id="loadingPanel" className="ui dimmer">
+					    	<div className="ui text loader">Loading</div>
+					  </div>
         </div>;
     }
 

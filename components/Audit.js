@@ -4,15 +4,24 @@ import Input from './input'
 class Audit extends React.Component {
 
 		render() {
-        let modifiedDate = new Date(this.props.value.modifiedDate);
+				let { modifiedBy, modifiedDate } = this.props.value;
 
-        let auditComponent = <div>
-            <br/>
-            <p>Modified By {this.props.value.modifiedBy}</p>
-    				<p>Modified Date {modifiedDate.toLocaleString()}</p>
+				let modifiedByComponent = <div className="ui label"
+						data-inverted="" data-tooltip="Modified By" data-position="bottom left">
+						<i className="icon user"></i> {modifiedBy}
 				</div>;
 
-		    return this.props.value.modifiedBy ? auditComponent : null;
+				let modifiedDateComponent = <div className="ui label"
+						data-inverted="" data-tooltip="Modified Date" data-position="bottom left">
+						<i className="history icon"></i> {new Date(modifiedDate ? modifiedDate : new Date()).toLocaleString()}
+				</div>;
+
+        let auditComponent = <div className="audit">
+						{modifiedBy ? modifiedByComponent : null}
+						{modifiedDate ? modifiedDateComponent : null}
+				</div>;
+
+		    return modifiedBy || modifiedDate ? auditComponent : null;
 		}
 
 }

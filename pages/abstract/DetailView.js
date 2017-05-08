@@ -51,6 +51,7 @@ class Detail extends View {
     onAdd() {
         this.setState({
             updateMode: "CREATE",
+            previousValue: this.state.value,
             value: {}
         }, function() {
             this.initialInput.focus();
@@ -59,13 +60,15 @@ class Detail extends View {
 
     onCancel() {
         this.setState({
-            updateMode: null
+            updateMode: null,
+            value: this.state.previousValue
         });
     }
 
     onEdit() {
         this.setState({
             updateMode: "EDIT",
+            previousValue: this.state.value
         }, function() {
             this.initialInput.focus();
         });
@@ -73,18 +76,17 @@ class Detail extends View {
 
     getActions() {
         let viewingActions = <div>
-            <Button onClick={() => this.onAdd()}>Add</Button>
-            <Button onClick={() => this.onEdit()}>Edit</Button>
-            <Button onClick={() => this.onDelete()}>Delete</Button>
+            <Button className="ui green button" icon="add" onClick={() => this.onAdd()}>Add</Button>
+            <Button className="ui blue button" icon="write" onClick={() => this.onEdit()}>Edit</Button>
+            <Button className="ui button" icon="trash" onClick={() => this.onDelete()}>Delete</Button>
         </div>;
 
         let editingActions = <div>
-            <Button onClick={() => this.onSave()}>Save</Button>
-            <Button onClick={() => this.onCancel()}>Cancel</Button>
+            <Button className="ui green button" icon="save" onClick={() => this.onSave()}>Save</Button>
+            <Button className="ui button" icon="ban" onClick={() => this.onCancel()}>Cancel</Button>
         </div>;
 
-        return <div>
-            <br/>
+        return <div className="actions">
             {this.state.updateMode ? editingActions : viewingActions}
         </div>;
     }

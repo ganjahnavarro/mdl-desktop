@@ -2,7 +2,7 @@ import React from 'react'
 import {Route, IndexRoute} from 'react-router'
 
 import App from '../App'
-import Home from '../Home'
+import Dashboard from '../Dashboard'
 import Login from '../Login'
 
 import Units from '../Units'
@@ -22,10 +22,9 @@ function requireAuth(nextState, replaceState) {
 
 module.exports = (
     <Route path="/" component={App}>
-        // <IndexRoute component={Login}/>
-        <IndexRoute component={Home}/>
+        <IndexRoute component={Login}/>
 
-        <Route path="/home" component={Home}/>
+        <Route path="/dashboard" component={Dashboard}/>
         <Route path="/login" component={Login} />
 
         <Route path="/units" component={Units} onEnter={requireAuth}/>

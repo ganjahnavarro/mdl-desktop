@@ -7,6 +7,7 @@ import Alert from '../core/alert'
 
 import Input from '../components/input'
 import Button from '../components/button'
+import Header from '../components/header'
 
 class Login extends View {
 
@@ -21,7 +22,7 @@ class Login extends View {
 				if (userName && password) {
 						Fetch.post("/login", data, (success) => {
 								if (success) {
-										hashHistory.push("/home");
+										hashHistory.push("/dashboard");
 								} else {
 										Alert.error("Invalid username and/or password.");
 								}
@@ -32,9 +33,7 @@ class Login extends View {
 		}
 
 		render() {
-		    return <div>
-						<p>At Login</p>
-
+		    return <div className="ui form">
 						<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Username"
 								name="userName" value={this.state.userName}
 								onChange={super.onChange.bind(this)} />
@@ -42,7 +41,7 @@ class Login extends View {
 						<Input label="Password" name="password" value={this.state.password}
 								onChange={super.onChange.bind(this)} />
 
-						<Button onClick={() => this.login()}>Login</Button>
+						<Button className="ui button" onClick={() => this.login()}>Login</Button>
 		    </div>
 		}
 }

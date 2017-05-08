@@ -6,32 +6,13 @@ body {
     font-family: Roboto;
     font-size: 16px;
 }
-/*
-input, select {
-    padding: 5px 10px;
-    border: 1px solid gainsboro;
+
+tr {
+    height: 2.7em;
 }
-
-input, select, div.Select {
-    width: 50%;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
-
-button {
-    background-color: dodgerblue;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-right: 5px;
-    border-radius: 5px;
-    outline: none;
-}*/
 
 
 /* Scrollbar */
-
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -52,10 +33,8 @@ button {
     background: #999;
 }
 
+
 /* Datatable */
-/*table tr, table tr td {
-    height: 40px
-}
 
 tbody tr.selected {
     background-color: whitesmoke;
@@ -73,8 +52,7 @@ table input, table select, table div.Select {
     width: 100%;
     border-radius: 0;
     margin: 0;
-    height: 40px;
-}*/
+}
 
 tr.invalid {
     background-color: rgba(200, 0, 0, 0.1);

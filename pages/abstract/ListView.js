@@ -43,9 +43,9 @@ class Temp extends View {
 		}
 
     renderItem(item, index) {
-				return <p key={index} onClick={this.onItemClick.bind(this, index)}>
+				return <li key={index} onClick={this.onItemClick.bind(this, index)}>
 						{item.name}
-				</p>;
+				</li>;
 		}
 
     firstItem() {

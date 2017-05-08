@@ -7,6 +7,7 @@ import DetailView from './abstract/DetailView'
 
 import Input from '../components/input'
 import Audit from '../components/Audit'
+import Header from '../components/header'
 
 
 class Units extends ListView {
@@ -25,18 +26,23 @@ class Units extends ListView {
 				}
 
 		    return <div>
-						<p>At units. <Link to="/">Go to home</Link></p>
-						<hr />
+						<Header />
+						<div className="ui grid">
+								<div className="five wide column ui form">
+										<Input label="Search" value={this.state.filter} name="filter"
+													onChange={this.onFilter.bind(this)} placeholder="Type here to search" />
 
-						<p>Search</p>
-						<Input value={this.state.filter} onChange={this.onFilter.bind(this)} /> <br/>
-						<hr />
+										<div className="ui divider"></div>
+										<ul className="ui list">
+												{items}
+										</ul>
+								</div>
 
-						{items}
-						<hr />
-
-						<Unit value={selectedItem} onFetch={this.onFetch}/>
-		    </div>
+								<div className="eleven wide column">
+										<Unit value={selectedItem} onFetch={this.onFetch}/>
+								</div>
+				    </div>
+				</div>;
 		}
 }
 
@@ -51,15 +57,19 @@ class Unit extends DetailView {
 				let value = this.state.value;
 
 		    return <div>
-						<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
-								name="name" value={this.state.value.name} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
+						<div className="ui form">
+								<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
+										name="name" value={this.state.value.name} disabled={!this.state.updateMode}
+										onChange={super.onChange.bind(this)} />
 
-						<Input name="pluralName" label="Plural Name" value={this.state.value.pluralName} disabled={!this.state.updateMode}
-								onChange={super.onChange.bind(this)} />
+								<Input name="pluralName" label="Plural Name" value={this.state.value.pluralName} disabled={!this.state.updateMode}
+										onChange={super.onChange.bind(this)} />
+						</div>
 
-            <Audit value={value} />
-						{super.getActions()}
+						<div>
+								<Audit value={value} />
+								{super.getActions()}
+						</div>
 		    </div>
 		}
 }

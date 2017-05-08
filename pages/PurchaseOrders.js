@@ -8,8 +8,10 @@ import Alert from '../core/alert'
 
 import Input from '../components/input'
 import Button from '../components/button'
+import Header from '../components/header'
 import Dropdown from '../components/dropdown'
 import Datatable from '../components/datatable'
+
 
 import View from './abstract/View'
 
@@ -221,7 +223,7 @@ class PurchaseOrders extends View {
             });
         }
 
-        return <div>
+        return <div className="ui form">
             <Input ref={(input) => {this.firstInput = input}} autoFocus="true"
                 name="purchaseOrder.documentNo"
                 label="Document No." value={purchaseOrder.documentNo} disabled={!this.state.updateMode}
@@ -240,7 +242,7 @@ class PurchaseOrders extends View {
 
             <Input name="totalAmount" label="Total Amount" value={Formatter.formatAmount(totalAmount)} disabled={true} />
 
-            <br/><br/>
+            <br/>
 
             <Datatable
                 columns={this.state.columns}
@@ -252,31 +254,34 @@ class PurchaseOrders extends View {
         </div>;
     }
 
-    render() {
+    getActions() {
         let { purchaseOrder, updateMode } = this.state;
         let actionButtons = null;
 
         if (updateMode) {
             actionButtons = <div>
-                <Button onClick={() => this.onSave()}>Save</Button>
-                <Button onClick={() => this.onCancel()}>Cancel</Button>
+                <Button className="ui green button" icon="save" onClick={() => this.onSave()}>Save</Button>
+                <Button className="ui button" icon="ban" onClick={() => this.onCancel()}>Cancel</Button>
             </div>;
         } else {
-            let editButton = purchaseOrder ? <Button onClick={() => this.onEdit()}>Edit</Button> : null;
+            let editButton = purchaseOrder ? <Button className="ui blue button" icon="write" onClick={() => this.onEdit()}>Edit</Button> : null;
 
             actionButtons = <div>
-                <Button onClick={() => this.onAdd()}>Add</Button>
+                <Button className="ui green button" icon="add" onClick={() => this.onAdd()}>Add</Button>
                 {editButton}
-                <Button onClick={() => this.onDelete()}>Delete</Button>
+                <Button className="ui button" icon="trash" onClick={() => this.onDelete()}>Delete</Button>
             </div>
         }
+        return <div className="actions">{actionButtons}</div>;
+    }
+
+    render() {
+        let { purchaseOrder, updateMode } = this.state;
 
         return <div>
-            <p>At purchase orders. <Link to="/">Go to home</Link></p>
-            <hr />
-
+						<Header />
             {this.state.purchaseOrder ? this.renderPurchaseOrder() : this.renderPlaceholder()}
-            {actionButtons}
+            {this.getActions()}
         </div>;
     }
 
