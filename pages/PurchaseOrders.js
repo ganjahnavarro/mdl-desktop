@@ -10,6 +10,7 @@ import Input from '../components/input'
 import Button from '../components/button'
 import Header from '../components/header'
 import Dropdown from '../components/dropdown'
+import Textarea from '../components/textarea'
 import Datatable from '../components/datatable'
 
 
@@ -224,24 +225,33 @@ class PurchaseOrders extends View {
         }
 
         return <div className="ui form">
-            <Input ref={(input) => {this.firstInput = input}} autoFocus="true"
-                name="purchaseOrder.documentNo"
-                label="Document No." value={purchaseOrder.documentNo} disabled={!this.state.updateMode}
-                onChange={super.onChange.bind(this)} />
+            <div className="fields">
+                <Input ref={(input) => {this.firstInput = input}} autoFocus="true"
+                    name="purchaseOrder.documentNo"
+                    label="Document No." value={purchaseOrder.documentNo} disabled={!this.state.updateMode}
+                    onChange={super.onChange.bind(this)} fieldClassName="eight" />
 
-            <Input name="purchaseOrder.date" placeholder="MM/dd/yyyy"
-                label="Date" value={purchaseOrder.date} disabled={!this.state.updateMode}
-                onChange={super.onChange.bind(this)} />
+                <Input name="purchaseOrder.date" placeholder="MM/dd/yyyy"
+                    label="Date" value={purchaseOrder.date} disabled={!this.state.updateMode}
+                    onChange={super.onChange.bind(this)} fieldClassName="eight" />
+            </div>
 
-            <Dropdown name="supplier" label="Supplier" value={supplierId} disabled={!this.state.updateMode}
-                options={supplierItems} onChange={(value) => this.onSupplierChange(value)} />
+            <div className="fields">
+                <Dropdown name="supplier" label="Supplier" value={supplierId} disabled={!this.state.updateMode}
+                    options={supplierItems} onChange={(value) => this.onSupplierChange(value)}
+                    fieldClassName="eight" />
 
-            <Input ref={(input) => {this.lastInput = input}}
-                name="purchaseOrder.remarks" label="Remarks" value={purchaseOrder.remarks} disabled={!this.state.updateMode}
-                onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)} />
+                <Input name="totalAmount" label="Total Amount"
+                    value={Formatter.formatAmount(totalAmount)} disabled={true}
+                    fieldClassName="eight" />
+            </div>
 
-            <Input name="totalAmount" label="Total Amount" value={Formatter.formatAmount(totalAmount)} disabled={true} />
-
+            <div className="fields">
+                <Textarea ref={(input) => {this.lastInput = input}}
+                    name="purchaseOrder.remarks" label="Remarks" value={purchaseOrder.remarks} disabled={!this.state.updateMode}
+                    onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)}
+                    fieldClassName="eight" />
+            </div>
             <br/>
 
             <Datatable

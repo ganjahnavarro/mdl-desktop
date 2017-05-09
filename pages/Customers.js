@@ -11,6 +11,7 @@ import Input from '../components/input'
 import Audit from '../components/Audit'
 import Header from '../components/header'
 import Dropdown from '../components/dropdown'
+import Textarea from '../components/textarea'
 
 
 class Customers extends ListView {
@@ -86,7 +87,7 @@ class Customer extends DetailView {
 								<Dropdown name="agent" label="Agent" value={agentId} disabled={!this.state.updateMode}
 										options={agents} onChange={this.onAgentChange.bind(this)} />
 
-								<Input name="address" label="Address" value={value.address} disabled={!this.state.updateMode}
+								<Textarea name="address" label="Address" value={value.address} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
 								<Input name="contact" label="Contact" value={value.contact} disabled={!this.state.updateMode}

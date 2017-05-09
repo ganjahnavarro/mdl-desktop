@@ -8,6 +8,7 @@ import DetailView from './abstract/DetailView'
 import Input from '../components/input'
 import Audit from '../components/Audit'
 import Header from '../components/header'
+import Textarea from '../components/textarea'
 
 
 class Categories extends ListView {
@@ -58,6 +59,9 @@ class Category extends DetailView {
 						<div className="ui form">
 								<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
 										name="name" value={this.state.value.name} disabled={!this.state.updateMode}
+										onChange={super.onChange.bind(this)} />
+
+								<Textarea name="description" label="Description" value={this.state.value.description} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 						</div>
 

@@ -54,10 +54,12 @@ Fetch.delete = function(resource, id, successCallback, errorCallback) {
 }
 
 function preFetch() {
+    $("#loadingPanel").show();
     $("#loadingPanel").addClass("active");
 }
 
 function postFetch() {
+    $("#loadingPanel").hide();
     $("#loadingPanel").removeClass("active");
 }
 

@@ -8,6 +8,7 @@ import DetailView from './abstract/DetailView'
 import Input from '../components/input'
 import Audit from '../components/Audit'
 import Header from '../components/header'
+import Textarea from '../components/textarea'
 
 
 class Suppliers extends ListView {
@@ -62,7 +63,7 @@ class Supplier extends DetailView {
 										name="name" value={this.state.value.name} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Input name="address" label="Address" value={this.state.value.address} disabled={!this.state.updateMode}
+								<Textarea name="address" label="Address" value={this.state.value.address} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
 								<Input name="contact" label="Contact" value={this.state.value.contact} disabled={!this.state.updateMode}

@@ -11,10 +11,6 @@ import Header from '../components/header'
 
 class Login extends View {
 
-		constructor(props) {
-				super(props);
-		}
-
 		login() {
 				let { userName, password } = this.state;
 				let data = { userName, password };
@@ -33,16 +29,25 @@ class Login extends View {
 		}
 
 		render() {
-		    return <div className="ui form">
-						<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Username"
-								name="userName" value={this.state.userName}
-								onChange={super.onChange.bind(this)} />
+				return <div className="login ui middle aligned center aligned grid">
+						<div className="column">
+								<h2 className="ui grey image header">
+										<img id="brand" src="resources/images/logo.png" className="image" />
+										<p>Log-in to your account</p>
+								</h2>
 
-						<Input label="Password" name="password" value={this.state.password}
-								onChange={super.onChange.bind(this)} />
+								<div className="ui large form stacked segment">
+										<Input ref={(input) => {this.initialInput = input}} autoFocus="true" placeholder="Username"
+												name="userName" value={this.state.userName} icon="user"
+												onChange={super.onChange.bind(this)} />
 
-						<Button className="ui button" onClick={() => this.login()}>Login</Button>
-		    </div>
+										<Input placeholder="Password" name="password" value={this.state.password}
+												onChange={super.onChange.bind(this)} icon="lock" />
+
+										<Button className="ui fluid large basic purple submit button" onClick={() => this.login()}>Login</Button>
+								</div>
+						</div>
+				</div>;
 		}
 }
 

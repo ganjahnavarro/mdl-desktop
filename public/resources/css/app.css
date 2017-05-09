@@ -7,10 +7,13 @@ body {
     font-size: 16px;
 }
 
+#app, .app, .login {
+    height: 100%;
+}
+
 tr {
     height: 2.7em;
 }
-
 
 /* Scrollbar */
 ::-webkit-scrollbar {

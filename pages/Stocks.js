@@ -10,6 +10,7 @@ import Provider from '../core/provider'
 import Input from '../components/input'
 import Audit from '../components/Audit'
 import Header from '../components/header'
+import Textarea from '../components/textarea'
 import Dropdown from '../components/dropdown'
 
 
@@ -98,23 +99,32 @@ class Stock extends DetailView {
 										name="name" value={value.name} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Input name="description" label="Description" value={value.description} disabled={!this.state.updateMode}
+								<Textarea name="description" label="Description" value={value.description} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Input name="cost" label="Cost" value={value.cost} disabled={!this.state.updateMode}
-										onChange={super.onChange.bind(this)} />
+								<div className="fields">
+										<Input name="cost" label="Cost" value={value.cost} disabled={!this.state.updateMode}
+												onChange={super.onChange.bind(this)}
+												fieldClassName="six" />
 
-								<Input name="price" label="Price" value={value.price} disabled={!this.state.updateMode}
-										onChange={super.onChange.bind(this)} />
+										<Input name="price" label="Price" value={value.price} disabled={!this.state.updateMode}
+												onChange={super.onChange.bind(this)}
+												fieldClassName="six" />
 
-								<Input name="onHand" label="Quantity on Hand" value={value.onHand} disabled={!this.state.updateMode}
-										onChange={super.onChange.bind(this)} />
+										<Input name="onHand" label="Quantity on Hand" value={value.onHand} disabled={!this.state.updateMode}
+												onChange={super.onChange.bind(this)}
+												fieldClassName="four" />
+								</div>
 
-								<Dropdown name="unit" label="Unit" value={unitId} disabled={!this.state.updateMode}
-										options={units} onChange={this.onUnitChange.bind(this)} />
+								<div className="fields">
+										<Dropdown name="category" label="Category" value={categoryId} disabled={!this.state.updateMode}
+												options={categories} onChange={this.onCategoryChange.bind(this)}
+												fieldClassName="thirteen" />
 
-								<Dropdown name="category" label="Category" value={categoryId} disabled={!this.state.updateMode}
-										options={categories} onChange={this.onCategoryChange.bind(this)} />
+										<Dropdown name="unit" label="Unit" value={unitId} disabled={!this.state.updateMode}
+												options={units} onChange={this.onUnitChange.bind(this)}
+												fieldClassName="three" />
+								</div>
 						</div>
 
 						<div>

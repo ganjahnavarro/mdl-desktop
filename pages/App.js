@@ -10,14 +10,8 @@ class App extends View {
     }
 
     render() {
-        return <div>
-            <div className="ui container">
-                {this.props.children}
-            </div>
-
-            <div id="loadingPanel" className="ui dimmer">
-					    	<div className="ui text loader">Loading</div>
-					  </div>
+        return <div className="ui container app">
+            {this.props.children}
         </div>;
     }
 

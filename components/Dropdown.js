@@ -8,17 +8,19 @@ class Dropdown extends React.Component {
 					https://github.com/JedWatson/react-select#further-options
 				*/
 
+				let { label, loadOptions, fieldClassName } = this.props;
+				fieldClassName = fieldClassName ? fieldClassName + " wide field" : "field";
+
         let props = Object.assign({}, this.props);
 				props.clearable = false;
 				props.matchPos = "start"
 				props.inputProps = {type: "react-type"};
         delete props.label;
 
-				let label = this.props.label;
-				let asyncSelect = typeof this.props.loadOptions != "undefined";
+				let asyncSelect = typeof loadOptions != "undefined";
 				let selectComponent = asyncSelect ? <Select.Async {...props} /> : <Select {...props} />;
 
-				return <div className="field">
+				return <div className={fieldClassName}>
             {label ? <label>{label}</label> : null}
 						{selectComponent}
         </div>

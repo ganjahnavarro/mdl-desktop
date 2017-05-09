@@ -28,7 +28,7 @@ class Input extends React.Component {
 				fieldClassName = fieldClassName ? fieldClassName + " wide field" : "field";
 
 				let props = Object.assign({}, this.props);
-				
+
 				if (typeof props.defaultValue == "undefined") {
 						props.value = props.value || "";
 				}
@@ -36,7 +36,7 @@ class Input extends React.Component {
 				delete props.icon;
 				delete props.fieldClassName;
 
-				let htmlInput = <input ref={(input) => {this.selectedInput = input}} {...props} />;
+				let htmlInput = <textarea rows="3" ref={(input) => {this.selectedInput = input}} {...props} />;
 				let component = htmlInput;
 
 				if (this.props.icon) {
