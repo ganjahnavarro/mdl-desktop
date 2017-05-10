@@ -9,6 +9,7 @@ import Input from '../components/input'
 import Audit from '../components/Audit'
 import Header from '../components/header'
 import Textarea from '../components/textarea'
+import Dropdown from '../components/dropdown'
 
 
 class Agents extends ListView {
@@ -54,22 +55,36 @@ class Agent extends DetailView {
         this.endpoint = "agent/";
     }
 
+		onTypeChange(type) {
+		    let value = this.state.value || {};
+		    value.type = type.value;
+		    this.setState({value});
+		}
+
 		render() {
 				let value = this.state.value;
+
+				let types = [
+						{value: "IN_HOUSE", label: "In House"},
+						{value: "FREELANCE", label: "Freelance"},
+				];
 
 				return <div>
 						<div className="ui form">
 								<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
-										name="name" value={this.state.value.name} disabled={!this.state.updateMode}
+										name="name" value={value.name} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Textarea name="address" label="Address" value={this.state.value.address} disabled={!this.state.updateMode}
+								<Dropdown name="type" label="Type" value={value.type} disabled={!this.state.updateMode} searchable={false}
+										options={types} onChange={this.onTypeChange.bind(this)} />
+
+								<Textarea name="address" label="Address" value={value.address} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Input name="contact" label="Contact" value={this.state.value.contact} disabled={!this.state.updateMode}
+								<Input name="contact" label="Contact" value={value.contact} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Input name="tin" label="TIN" value={this.state.value.tin} disabled={!this.state.updateMode}
+								<Input name="tin" label="TIN" value={value.tin} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 						</div>
 

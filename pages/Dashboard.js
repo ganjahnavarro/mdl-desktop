@@ -11,11 +11,11 @@ class Dashboard extends View {
 						"blue", "violet", "purple", "pink"];
 
 				return <div key={item.label} className={"ui card " + colors[index]}>
-						<div className="image">
-								<Link to={item.link}>
+						<Link to={item.link} className="image">
+								<div className="image-container">
 										<img src={"resources/images/" + item.icon + ".png"} />
-								</Link>
-						</div>
+								</div>
+						</Link>
 
 						<Link to={item.link} className="content">
 								<span className="header">{item.label}</span>
@@ -27,7 +27,8 @@ class Dashboard extends View {
 				let files = [
 						{link: "/units", label: "Units", icon: "icon_units"},
 						{link: "/categories", label: "Categories", icon: "icon_categories"},
-						{link: "/stocks", label: "Stocks", icon: "icon_stocks"},
+						{link: "/brands", label: "Brands", icon: "icon_brands"},
+						{link: "/stocks", label: "Stock Inventory", icon: "icon_stocks"},
 						{link: "/agents", label: "Agents", icon: "icon_agents"},
 						{link: "/suppliers", label: "Suppliers", icon: "icon_suppliers"},
 						{link: "/customers", label: "Customers", icon: "icon_customers"}
@@ -35,26 +36,40 @@ class Dashboard extends View {
 
 				let transactions = [
 						{link: "/purchaseOrders", label: "Purchase Orders", icon: "icon_purchase_orders"},
-						{link: "/salesOrders", label: "Sales Orders", icon: "icon_sales_orders"}
+						{link: "/salesOrders", label: "Sales Orders", icon: "icon_home"},
+						{link: "/salesOrders", label: "Customer Payment", icon: "icon_home"},
+						{link: "/salesOrders", label: "Supplier Payment", icon: "icon_home"}
+				];
+
+				let reports = [
+						{link: "/todo", label: "Todo", icon: "icon_home"}
 				];
 
 				let filesComponents = files.map((item, index) => this.renderItem(item, index));
 				let transactionsComponents = transactions.map((item, index) => this.renderItem(item, index));
+				let reportsComponents = reports.map((item, index) => this.renderItem(item, index));
 
 				return <div>
 						<Header />
 						<div className="dashboard">
 								<div className="group">
 										<div className="ui large label teal">Files</div> <br/>
-										<div className="ui link six cards">
+										<div className="ui link seven cards">
 												{filesComponents}
 										</div>
 								</div>
 
 								<div className="group">
 										<div className="ui large label blue">Transactions</div>
-										<div className="ui link four cards">
+										<div className="ui link five cards">
 												{transactionsComponents}
+										</div>
+								</div>
+
+								<div className="group">
+										<div className="ui large label violet">Reports</div>
+										<div className="ui link five cards">
+												{reportsComponents}
 										</div>
 								</div>
 						</div>

@@ -22,16 +22,25 @@ todo!
 [x] login
 [x] no results
 
--- 2017 05 08
+[x] initial ui design
 
-[ ] initial ui design
+---
 
-[ ] update
-[ ] navigation
+[x] update
+[x] navigation
+
+[x] additional fields
+    [x] agent type
+    [x] brand data entry
+    [x] brand @ stock
+    [x] Customer - Terms, Owner's Name, Home address, Account Number
+    [x] Supplier - Terms
+
+[ ] po & po item discounts
 
 [ ] sales orders
 [ ] counters
-[ ] additional fields
+
 [ ] date mask
 
 [ ] reports screens

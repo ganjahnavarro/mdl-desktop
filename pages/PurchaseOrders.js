@@ -166,13 +166,13 @@ class PurchaseOrders extends View {
         Fetch.delete(this.endpoint, this.state.purchaseOrder.id, () => this.onFetch());
     }
 
-    onFetch() {
-        let parameters = {
-            orderedBy: "documentNo",
-            pageOffset: this.state.pageOffset
-        };
+    onFetch(direction = "next") {
+        let parameters = {};
+        if (this.state.purchaseOrder) {
+            parameters.documentNo = this.state.purchaseOrder.documentNo;
+        }
 
-        Fetch.get("purchaseOrder/view", parameters, (purchaseOrder) => {
+        Fetch.get("purchaseOrder/" + direction, parameters, (purchaseOrder) => {
             let items = null;
             if (purchaseOrder) {
                 items = purchaseOrder.items;
@@ -205,6 +205,14 @@ class PurchaseOrders extends View {
             }, 0);
         }
         this.setState({totalAmount});
+    }
+
+    onPrevious() {
+        this.onFetch("previous");
+    }
+
+    onNext() {
+        this.onFetch("next");
     }
 
     renderPlaceholder() {
@@ -274,12 +282,13 @@ class PurchaseOrders extends View {
                 <Button className="ui button" icon="ban" onClick={() => this.onCancel()}>Cancel</Button>
             </div>;
         } else {
-            let editButton = purchaseOrder ? <Button className="ui blue button" icon="write" onClick={() => this.onEdit()}>Edit</Button> : null;
-
             actionButtons = <div>
+                {purchaseOrder ? <Button className="ui button basic teal" icon="angle left" onClick={() => this.onPrevious()}>Previous</Button> : null}
+                {purchaseOrder ? <Button className="ui button basic teal" icon="angle right" onClick={() => this.onNext()}>Next</Button> : null}
+
                 <Button className="ui green button" icon="add" onClick={() => this.onAdd()}>Add</Button>
-                {editButton}
-                <Button className="ui button" icon="trash" onClick={() => this.onDelete()}>Delete</Button>
+                {purchaseOrder ? <Button className="ui blue button" icon="write" onClick={() => this.onEdit()}>Edit</Button> : null}
+                {purchaseOrder ? <Button className="ui button" icon="trash" onClick={() => this.onDelete()}>Delete</Button> : null}
             </div>
         }
         return <div className="actions">{actionButtons}</div>;

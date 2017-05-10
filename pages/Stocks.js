@@ -60,6 +60,7 @@ class Stock extends DetailView {
     componentDidMount() {
         Provider.loadCategories((categories) => this.setState({categories}));
 				Provider.loadUnits((units) => this.setState({units}));
+				Provider.loadBrands((brands) => this.setState({brands}));
     }
 
 		onUnitChange(unit) {
@@ -74,55 +75,74 @@ class Stock extends DetailView {
 		    this.setState(nextState);
 		}
 
+		onBrandChange(brand) {
+		    let nextState = this.state.value || {};
+		    nextState.brand = {id: brand.value};
+		    this.setState(nextState);
+		}
+
 		render() {
-				let value = this.state.value;
+				let { value, units, categories, brands, updateMode } = this.state;
+
+				let unitOptions = [];
+				let categoryOptions = [];
+				let brandOptions = [];
+
         let unitId = value && value.unit ? value.unit.id : null;
 				let categoryId = value && value.category ? value.category.id : null;
+				let brandId = value && value.brand ? value.brand.id : null;
 
-				let units = [];
-				if (this.state.units) {
-						units = this.state.units.map((unit, index) => {
-								return {value: unit.id, label: unit.name};
+				if (units) {
+						unitOptions = units.map((unit, index) => {
+								return {value: unit.id, label: unit.name}
 						});
         }
 
-				let categories = [];
-				if (this.state.categories) {
-						categories = this.state.categories.map((category, index) => {
-								return {value: category.id, label: category.name};
+				if (categories) {
+						categoryOptions = categories.map((category, index) => {
+								return {value: category.id, label: category.name}
+						});
+        }
+
+				if (brands) {
+						brandOptions = brands.map((brand, index) => {
+								return {value: brand.id, label: brand.name}
 						});
         }
 
 				return <div>
 						<div className="ui form">
 								<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
-										name="name" value={value.name} disabled={!this.state.updateMode}
+										name="name" value={value.name} disabled={!updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Textarea name="description" label="Description" value={value.description} disabled={!this.state.updateMode}
+								<Textarea name="description" label="Description" value={value.description} disabled={!updateMode}
 										onChange={super.onChange.bind(this)} />
 
 								<div className="fields">
-										<Input name="cost" label="Cost" value={value.cost} disabled={!this.state.updateMode}
+										<Input name="cost" label="Cost" value={value.cost} disabled={!updateMode}
 												onChange={super.onChange.bind(this)}
 												fieldClassName="six" />
 
-										<Input name="price" label="Price" value={value.price} disabled={!this.state.updateMode}
+										<Input name="price" label="Price" value={value.price} disabled={!updateMode}
 												onChange={super.onChange.bind(this)}
 												fieldClassName="six" />
 
-										<Input name="onHand" label="Quantity on Hand" value={value.onHand} disabled={!this.state.updateMode}
+										<Input name="onHand" label="Quantity on Hand" value={value.onHand} disabled={!updateMode}
 												onChange={super.onChange.bind(this)}
 												fieldClassName="four" />
 								</div>
 
+								<Dropdown name="category" label="Category" value={categoryId} disabled={!updateMode}
+										options={categoryOptions} onChange={this.onCategoryChange.bind(this)} />
+
 								<div className="fields">
-										<Dropdown name="category" label="Category" value={categoryId} disabled={!this.state.updateMode}
-												options={categories} onChange={this.onCategoryChange.bind(this)}
+										<Dropdown name="brand" label="Brand" value={brandId} disabled={!updateMode}
+												options={brandOptions} onChange={this.onBrandChange.bind(this)}
 												fieldClassName="thirteen" />
 
-										<Dropdown name="unit" label="Unit" value={unitId} disabled={!this.state.updateMode}
-												options={units} onChange={this.onUnitChange.bind(this)}
+										<Dropdown name="unit" label="Unit" value={unitId} disabled={!updateMode}
+												options={unitOptions} onChange={this.onUnitChange.bind(this)}
 												fieldClassName="three" />
 								</div>
 						</div>

@@ -31,10 +31,10 @@ class Login extends View {
 		render() {
 				return <div className="login ui middle aligned center aligned grid">
 						<div className="column">
-								<h2 className="ui grey image header">
+								<div className="ui grey image">
 										<img id="brand" src="resources/images/logo.png" className="image" />
-										<p>Log-in to your account</p>
-								</h2>
+										<p className="message">Log-in to your account</p>
+								</div>
 
 								<div className="ui large form stacked segment">
 										<Input ref={(input) => {this.initialInput = input}} autoFocus="true" placeholder="Username"

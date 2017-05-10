@@ -75,10 +75,12 @@ class Detail extends View {
     }
 
     getActions() {
+        let value = this.state.value;
+
         let viewingActions = <div>
             <Button className="ui green button" icon="add" onClick={() => this.onAdd()}>Add</Button>
-            <Button className="ui blue button" icon="write" onClick={() => this.onEdit()}>Edit</Button>
-            <Button className="ui button" icon="trash" onClick={() => this.onDelete()}>Delete</Button>
+            {value && value.id ? <Button className="ui blue button" icon="write" onClick={() => this.onEdit()}>Edit</Button> : null}
+            {value && value.id ? <Button className="ui button" icon="trash" onClick={() => this.onDelete()}>Delete</Button> : null}
         </div>;
 
         let editingActions = <div>

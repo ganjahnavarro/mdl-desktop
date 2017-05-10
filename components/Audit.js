@@ -13,7 +13,7 @@ class Audit extends React.Component {
 
 				let modifiedDateComponent = <div className="ui label"
 						data-inverted="" data-tooltip="Modified Date" data-position="bottom left">
-						<i className="history icon"></i> {new Date(modifiedDate ? modifiedDate : new Date()).toLocaleString()}
+						<i className="history icon"></i> {modifiedDate}
 				</div>;
 
         let auditComponent = <div className="audit">

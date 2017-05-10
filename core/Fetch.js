@@ -6,14 +6,12 @@ import Alert from './alert'
 
 let Fetch = {};
 
-// $("#loadingPanel").removeClass("active");
-
 Fetch.get = function(resource, urlParameters, successCallback, errorCallback) {
     preFetch();
     let url = BASE_URL + resource + parseQuery(urlParameters);
 
     fetch(url, getDefaultHeaders())
-        .then((response) => handleResponse(successCallback, response))
+        .then((response) => handleResponse(successCallback, errorCallback, response))
         .catch((error) => handleError(errorCallback, error));
 };
 
@@ -25,7 +23,7 @@ Fetch.post = function(resource, requestBody, successCallback, errorCallback) {
     });
 
     fetch(BASE_URL + resource, headers)
-        .then((response) => handleResponse(successCallback, response))
+        .then((response) => handleResponse(successCallback, errorCallback, response))
         .catch((error) => handleError(errorCallback, error));
 }
 
@@ -37,7 +35,7 @@ Fetch.patch = function(resource, requestBody, successCallback, errorCallback) {
     });
 
     fetch(BASE_URL + resource, headers)
-        .then((response) => handleResponse(successCallback, response))
+        .then((response) => handleResponse(successCallback, errorCallback, response))
         .catch((error) => handleError(errorCallback, error));
 }
 
@@ -70,8 +68,8 @@ function getDefaultHeaders() {
     return { headers };
 }
 
-function handleResponse(callback, response) {
-    response.ok ? handleSuccess(callback, response) : handleError(callback, response);
+function handleResponse(successCallback, errorCallback, response) {
+    response.ok ? handleSuccess(successCallback, response) : handleError(errorCallback, response);
     postFetch();
 }
 

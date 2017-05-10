@@ -68,7 +68,7 @@ class Customer extends DetailView {
 		}
 
 		render() {
-				let value = this.state.value;
+				let { value, updateMode } = this.state;
 				let agentId = value && value.agent ? value.agent.id : null;
 
 				let agents = [];
@@ -81,26 +81,44 @@ class Customer extends DetailView {
 				return <div>
 						<div className="ui form">
 								<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
-										name="name" value={value.name} disabled={!this.state.updateMode}
+										name="name" value={value.name} disabled={!updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Dropdown name="agent" label="Agent" value={agentId} disabled={!this.state.updateMode}
+								<Dropdown name="agent" label="Agent" value={agentId} disabled={!updateMode}
 										options={agents} onChange={this.onAgentChange.bind(this)} />
 
-								<Textarea name="address" label="Address" value={value.address} disabled={!this.state.updateMode}
-										onChange={super.onChange.bind(this)} />
+								<Textarea name="address" label="Office Address" value={value.address} disabled={!updateMode}
+										onChange={super.onChange.bind(this)} rows={2} />
 
-								<Input name="contact" label="Contact" value={value.contact} disabled={!this.state.updateMode}
-										onChange={super.onChange.bind(this)} />
+								<Textarea name="homeAddress" label="Home Address" value={value.homeAddress} disabled={!updateMode}
+										onChange={super.onChange.bind(this)} rows={2} />
 
-								<Input name="fax" label="Fax" value={value.fax} disabled={!this.state.updateMode}
-										onChange={super.onChange.bind(this)} />
+								<div className="fields">
+										<Input name="contact" label="Contact" value={value.contact} disabled={!updateMode}
+												onChange={super.onChange.bind(this)} fieldClassName="six" />
 
-								<Input name="tin" label="TIN" value={value.tin} disabled={!this.state.updateMode}
-										onChange={super.onChange.bind(this)} />
+										<Input name="fax" label="Fax" value={value.fax} disabled={!updateMode}
+												onChange={super.onChange.bind(this)} fieldClassName="six"  />
 
-								<Input name="commission" label="Commission" value={value.commission} disabled={!this.state.updateMode}
-										onChange={super.onChange.bind(this)} />
+										<Input name="commission" label="Commission" value={value.commission} disabled={!updateMode}
+												onChange={super.onChange.bind(this)} fieldClassName="four" />
+								</div>
+
+								<div className="fields">
+										<Input name="tin" label="TIN" value={value.tin} disabled={!updateMode}
+												onChange={super.onChange.bind(this)} fieldClassName="eight" />
+
+										<Input name="terms" label="Terms" value={value.terms} disabled={!updateMode}
+												onChange={super.onChange.bind(this)} fieldClassName="eight" />
+								</div>
+
+								<div className="fields">
+										<Input name="ownersName" label="Owner's Name" value={value.ownersName} disabled={!updateMode}
+											onChange={super.onChange.bind(this)} fieldClassName="eight" />
+
+										<Input name="accountNumber" label="Account Number" value={value.accountNumber} disabled={!updateMode}
+												onChange={super.onChange.bind(this)} fieldClassName="eight" />
+								</div>
 						</div>
 
 						<div>

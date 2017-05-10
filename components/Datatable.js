@@ -32,7 +32,11 @@ class Datatable extends React.Component {
         if (nextProps.rows) {
             let nextState = this.state;
             nextState.rows = nextProps.rows;
-            nextState.newRowAdded = true;
+
+            let lastRow = nextProps.rows[nextProps.rows.length - 1];
+            let isLastRowEmpty = Object.keys(lastRow).length === 0 && lastRow.constructor === Object;
+            nextState.newRowAdded = isLastRowEmpty;
+
             this.setState(nextState);
         }
     }
@@ -297,6 +301,8 @@ class Datatable extends React.Component {
         });
 
         this.onCellFocus = true;
+
+        console.log("Stock Select: " + (rowIndex + 1 != rows.length));
 
         this.setState({
             newRowAdded: rowIndex + 1 != rows.length,

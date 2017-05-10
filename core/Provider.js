@@ -64,4 +64,16 @@ Provider.loadStocks = function(callback) {
     });
 };
 
+Provider.loadBrands = function(callback) {
+    let parameters = {
+        orderedBy: "name"
+    };
+
+    Fetch.get("brand/", parameters, (items) => {
+        if (callback) {
+            callback(items);
+        }
+    });
+};
+
 module.exports = Provider;

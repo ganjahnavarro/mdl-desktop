@@ -6,6 +6,7 @@ import Dashboard from '../Dashboard'
 import Login from '../Login'
 
 import Units from '../Units'
+import Brand from '../Brand'
 import Agents from '../Agents'
 import Customers from '../Customers'
 import Categories from '../Categories'
@@ -28,6 +29,7 @@ module.exports = (
         <Route path="/login" component={Login} />
 
         <Route path="/units" component={Units} onEnter={requireAuth}/>
+        <Route path="/brands" component={Brand} onEnter={requireAuth}/>
         <Route path="/agents" component={Agents} onEnter={requireAuth}/>
         <Route path="/customers" component={Customers} onEnter={requireAuth}/>
         <Route path="/categories" component={Categories} onEnter={requireAuth}/>

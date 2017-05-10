@@ -11,11 +11,11 @@ import Header from '../components/header'
 import Textarea from '../components/textarea'
 
 
-class Suppliers extends ListView {
+class Categories extends ListView {
 
 		constructor(props) {
 		    super(props);
-        this.endpoint = "supplier/";
+        this.endpoint = "brand/";
 		}
 
 		render() {
@@ -26,9 +26,9 @@ class Suppliers extends ListView {
 						items = this.state.items.map(this.renderItem.bind(this));
 				}
 
-		    return <div>
+				return <div>
 						<Header />
-								<div className="ui grid">
+						<div className="ui grid">
 								<div className="five wide column ui form">
 										<Input label="Search" value={this.state.filter} name="filter"
 													onChange={this.onFilter.bind(this)} placeholder="Type here to search" />
@@ -40,55 +40,37 @@ class Suppliers extends ListView {
 								</div>
 
 								<div className="eleven wide column">
-										<Supplier value={selectedItem} onFetch={this.onFetch}/>
+										<Brand value={selectedItem} onFetch={this.onFetch}/>
 								</div>
 						</div>
 		    </div>;
 		}
 }
 
-class Supplier extends DetailView {
+class Brand extends DetailView {
 
 		constructor(props) {
 		    super(props);
-        this.endpoint = "supplier/";
+        this.endpoint = "brand/";
     }
 
 		render() {
-				let { value, updateMode } = this.state;
-
 				return <div>
 						<div className="ui form">
 								<Input ref={(input) => {this.initialInput = input}} autoFocus="true" label="Name"
-										name="name" value={value.name} disabled={!updateMode}
+										name="name" value={this.state.value.name} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
 
-								<Textarea name="address" label="Address" value={value.address} disabled={!updateMode}
+								<Textarea name="description" label="Description" value={this.state.value.description} disabled={!this.state.updateMode}
 										onChange={super.onChange.bind(this)} />
-
-								<div className="fields">
-										<Input name="contact" label="Contact" value={value.contact} disabled={!updateMode}
-												onChange={super.onChange.bind(this)} fieldClassName="eight" />
-
-										<Input name="fax" label="Fax" value={value.fax} disabled={!updateMode}
-												onChange={super.onChange.bind(this)} fieldClassName="eight" />
-								</div>
-
-								<div className="fields">
-										<Input name="tin" label="TIN" value={value.tin} disabled={!updateMode}
-												onChange={super.onChange.bind(this)} fieldClassName="eight" />
-
-										<Input name="terms" label="Terms" value={value.terms} disabled={!updateMode}
-												onChange={super.onChange.bind(this)} fieldClassName="eight" />
-								</div>
 						</div>
 
 						<div>
-								<Audit value={value} />
+								<Audit value={this.state.value} />
 								{super.getActions()}
 						</div>
 		    </div>
 		}
 }
 
-export default Suppliers;
+export default Categories;
