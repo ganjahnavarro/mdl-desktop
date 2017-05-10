@@ -14,6 +14,9 @@ import Suppliers from '../Suppliers'
 import Stocks from '../Stocks'
 
 import PurchaseOrders from '../PurchaseOrders'
+import SalesOrders from '../SalesOrders'
+
+import Todo from '../Todo'
 
 function requireAuth(nextState, replaceState) {
     /*
@@ -37,6 +40,9 @@ module.exports = (
         <Route path="/stocks" component={Stocks} onEnter={requireAuth}/>
 
         <Route path="/purchaseOrders" component={PurchaseOrders} onEnter={requireAuth}/>
+        <Route path="/salesOrders" component={SalesOrders} onEnter={requireAuth}/>
+
+        <Route path="/todo" component={Todo} onEnter={requireAuth}/>
     </Route>
 
 )

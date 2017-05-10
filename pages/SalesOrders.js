@@ -15,11 +15,11 @@ import Datatable from '../components/datatable'
 
 import TransactionView from './abstract/TransactionView'
 
-class PurchaseOrders extends TransactionView {
+class SalesOrders extends TransactionView {
 
     constructor(props) {
         super(props);
-        this.endpoint = "purchaseOrder/";
+        this.endpoint = "salesOrder/";
     }
 
     getColumns() {
@@ -73,10 +73,6 @@ class PurchaseOrders extends TransactionView {
             if (transaction.discount2) {
                 columns.push(createDiscountColumn("discount2", "D2"));
             }
-
-            if (transaction.discount3) {
-                columns.push(createDiscountColumn("discount3", "D3"));
-            }
         }
 
         columns.push({
@@ -95,10 +91,6 @@ class PurchaseOrders extends TransactionView {
                     if (item.discount2 && !isNaN(item.discount2)) {
                         net = net - (net * (parseFloat(item.discount2) / 100));
                     }
-
-                    if (item.discount3 && !isNaN(item.discount3)) {
-                        net = net - (net * (parseFloat(item.discount3) / 100));
-                    }
                     return net;
                 }
                 return null;
@@ -110,7 +102,8 @@ class PurchaseOrders extends TransactionView {
 
     componentDidMount() {
         super.componentDidMount();
-        Provider.loadSuppliers((suppliers) => this.setState({suppliers}));
+        Provider.loadCustomers((customers) => this.setState({customers}));
+        Provider.loadAgents((agents) => this.setState({agents}));
     }
 
     getRequestValue() {
@@ -123,19 +116,32 @@ class PurchaseOrders extends TransactionView {
             if (!transaction.discount2) {
                 delete item.discount2;
             }
-
-            if (!transaction.discount3) {
-                delete item.discount3;
-            }
             return item;
         });
 
         return transaction;
 		}
 
-    onSupplierChange(supplier) {
+    onCustomerChange(customer) {
+        let { customers, transaction } = this.state;
+
+        transaction = transaction || {};
+		    transaction.customer = {id: customer.value};
+
+        debugger;
+        if (customers) {
+            let customerObject = customers.find((customer) => customer.id == customer.value);
+            if (customerObject && customerObject.agent && !transaction.agent) {
+                transaction.agent = customerObject.agent;
+            }
+        }
+
+		    this.setState({transaction});
+		}
+
+    onAgentChange(agent) {
 		    let transaction = this.state.transaction || {};
-		    transaction.supplier = {id: supplier.value};
+		    transaction.agent = {id: agent.value};
 		    this.setState({transaction});
 		}
 
@@ -154,15 +160,25 @@ class PurchaseOrders extends TransactionView {
     }
 
     renderTransaction() {
-        let { transaction, suppliers, totalAmount, items, updateMode } = this.state;
+        let { transaction, customers, agents, totalAmount, items, updateMode } = this.state;
 
-        let supplier = transaction.supplier;
-        let supplierId = supplier ? supplier.id : null;
+        let customer = transaction.customer;
+        let customerId = customer ? customer.id : null;
 
-        let supplierItems = [];
-        if (suppliers) {
-            supplierItems = suppliers.map((supplier) => {
-                return {value: supplier.id, label: supplier.name};
+        let agent = transaction.agent;
+        let agentId = agent ? agent.id : null;
+
+        let customerItems = [];
+        if (customers) {
+            customerItems = customers.map((customer) => {
+                return {value: customer.id, label: customer.name};
+            });
+        }
+
+        let agentItems = [];
+        if (agents) {
+            agentItems = agents.map((agent) => {
+                return {value: agent.id, label: agent.name};
             });
         }
 
@@ -179,21 +195,17 @@ class PurchaseOrders extends TransactionView {
             </div>
 
             <div className="fields">
-                <Dropdown name="supplier" label="Supplier" value={supplierId} disabled={!updateMode}
-                    options={supplierItems} onChange={(value) => this.onSupplierChange(value)}
-                    fieldClassName="seven" />
+                <Dropdown name="customer" label="Customer" value={customerId} disabled={!updateMode}
+                    options={customerItems} onChange={(value) => this.onCustomerChange(value)}
+                    fieldClassName="six" />
 
-                <Input name="transaction.discount1" maxLength={2}
-                    label="Discount 1" value={transaction.discount1} disabled={!updateMode}
-                    onChange={(event) => this.onDiscountChange(event, "discount1")} fieldClassName="three" />
+                <Dropdown name="agent" label="Agent" value={agentId} disabled={!updateMode}
+                    options={agentItems} onChange={(value) => this.onAgentChange(value)}
+                    fieldClassName="six" />
 
-                <Input name="transaction.discount2" maxLength={2}
-                    label="Discount 2" value={transaction.discount2} disabled={!updateMode || !transaction.discount1}
-                    onChange={(event) => this.onDiscountChange(event, "discount2")} fieldClassName="three" />
-
-                <Input name="transaction.discount3" maxLength={2}
-                    label="Discount 3" value={transaction.discount3} disabled={!updateMode || !transaction.discount2}
-                    onChange={(event) => this.onDiscountChange(event, "discount3")} fieldClassName="three" />
+                <Input name="totalAmount" label="Total Amount"
+                    value={Formatter.formatAmount(totalAmount)} disabled={true}
+                    fieldClassName="four" />
             </div>
 
             <div className="fields">
@@ -201,9 +213,14 @@ class PurchaseOrders extends TransactionView {
                     name="transaction.remarks" label="Remarks" value={transaction.remarks} disabled={!updateMode}
                     onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)}
                     fieldClassName="eight" />
-                <Input name="totalAmount" label="Total Amount"
-                    value={Formatter.formatAmount(totalAmount)} disabled={true}
-                    fieldClassName="eight" />
+
+                <Input name="transaction.discount1" maxLength={2}
+                    label="Discount 1" value={transaction.discount1} disabled={!updateMode}
+                    onChange={(event) => this.onDiscountChange(event, "discount1")} fieldClassName="four" />
+
+                <Input name="transaction.discount2" maxLength={2}
+                    label="Discount 2" value={transaction.discount2} disabled={!updateMode || !transaction.discount1}
+                    onChange={(event) => this.onDiscountChange(event, "discount2")} fieldClassName="four" />
             </div>
             <br/>
 
@@ -219,4 +236,4 @@ class PurchaseOrders extends TransactionView {
 
 }
 
-export default PurchaseOrders;
+export default SalesOrders;

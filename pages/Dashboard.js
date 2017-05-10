@@ -36,13 +36,19 @@ class Dashboard extends View {
 
 				let transactions = [
 						{link: "/purchaseOrders", label: "Purchase Orders", icon: "icon_purchase_orders"},
-						{link: "/salesOrders", label: "Sales Orders", icon: "icon_home"},
-						{link: "/salesOrders", label: "Customer Payment", icon: "icon_home"},
-						{link: "/salesOrders", label: "Supplier Payment", icon: "icon_home"}
+						{link: "/salesOrders", label: "Sales Orders", icon: "icon_sales_orders"},
+						{link: "/todo", label: "Customer Payments", icon: "icon_customer_payments"},
+						{link: "/todo", label: "Supplier Payments", icon: "icon_supplier_payments"},
+						{link: "/todo", label: "Counter Receipts", icon: "icon_counter_receipts"},
+						{link: "/todo", label: "Commissions", icon: "icon_commissions"}
 				];
 
 				let reports = [
-						{link: "/todo", label: "Todo", icon: "icon_home"}
+						{link: "/todo", label: "Transaction List", icon: "icon_report1"},
+						{link: "/todo", label: "Stock Movement", icon: "icon_report2"},
+						{link: "/todo", label: "Stock Monitoring", icon: "icon_report3"},
+						{link: "/todo", label: "Purchase Monitoring", icon: "icon_report4"},
+						{link: "/todo", label: "Sales Monitoring", icon: "icon_report5"}
 				];
 
 				let filesComponents = files.map((item, index) => this.renderItem(item, index));
@@ -61,7 +67,7 @@ class Dashboard extends View {
 
 								<div className="group">
 										<div className="ui large label blue">Transactions</div>
-										<div className="ui link five cards">
+										<div className="ui link six cards">
 												{transactionsComponents}
 										</div>
 								</div>

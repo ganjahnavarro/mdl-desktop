@@ -1,5 +1,5 @@
-body {
     padding: 6em;
+    body {
 }
 
 * {
@@ -9,6 +9,14 @@ body {
 
 #app, .app, .login {
     height: 100%;
+}
+
+.screen-center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
 }
 
 tr {

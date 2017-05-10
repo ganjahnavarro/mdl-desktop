@@ -7,7 +7,7 @@ import Alert from '../core/alert'
 
 import Input from '../components/input'
 import Button from '../components/button'
-import Header from '../components/header'
+
 
 class Login extends View {
 
