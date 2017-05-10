@@ -5,10 +5,12 @@ import ReactDOM from 'react-dom'
 
 import Provider from '../core/provider'
 import Formatter from '../core/formatter'
+import Utils from '../core/utils'
 
 import Input from './input'
 import Button from './button'
 import Dropdown from './dropdown'
+
 
 class Datatable extends React.Component {
 
@@ -21,20 +23,30 @@ class Datatable extends React.Component {
         };
 
         this.editableColumnIndexes = [];
-        this.props.columns.forEach((col, index) => {
-            if (col.editable) {
-                this.editableColumnIndexes.push(index);
-            }
-        });
     }
 
     componentWillReceiveProps(nextProps) {
+        this.handleColumnsChange(nextProps);
+        this.handleRowsChange(nextProps);
+    }
+
+    handleColumnsChange(nextProps) {
+        if (nextProps.columns) {
+            nextProps.columns.forEach((col, index) => {
+                if (col.editable) {
+                    this.editableColumnIndexes.push(index);
+                }
+            });
+        }
+    }
+
+    handleRowsChange(nextProps) {
         if (nextProps.rows) {
             let nextState = this.state;
             nextState.rows = nextProps.rows;
 
             let lastRow = nextProps.rows[nextProps.rows.length - 1];
-            let isLastRowEmpty = Object.keys(lastRow).length === 0 && lastRow.constructor === Object;
+            let isLastRowEmpty = Utils.isEmpty(lastRow);
             nextState.newRowAdded = isLastRowEmpty;
 
             this.setState(nextState);
@@ -225,7 +237,7 @@ class Datatable extends React.Component {
         return <thead>
             <tr>
                 {columns}
-                {this.props.allowedDelete && !this.props.disabled ? <th width={55}></th> : null}
+                {this.props.allowedDelete && !this.props.disabled ? <th width={40}></th> : null}
             </tr>
         </thead>;
     }
@@ -302,8 +314,6 @@ class Datatable extends React.Component {
 
         this.onCellFocus = true;
 
-        console.log("Stock Select: " + (rowIndex + 1 != rows.length));
-
         this.setState({
             newRowAdded: rowIndex + 1 != rows.length,
             rows
@@ -335,10 +345,16 @@ class Datatable extends React.Component {
             }
         };
 
-        let cellClassName = selected ? "selected" : null;
+        let cellClassName = selected ? "selected" : "";
+        cellClassName = column.type ? cellClassName + " " + column.type : cellClassName;
 
         let value = column.formula ? this.getFormulaValue(column, row) : this.getProperty(row, column);
         let cellContent = typeof column.getOptions != "undefined" && value ? value.name : value;
+
+        // if (typeof cellContent == "undefined" && typeof column.getDefaultValue != "undefined") {
+        //     let isFunction = typeof column.getDefaultValue == "function";
+        //     cellContent = isFunction ? column.getDefaultValue() : column.getDefaultValue;
+        // }
 
         if (column.editable) { this.tabIndex++ }
         let tabIndex = this.tabIndex;

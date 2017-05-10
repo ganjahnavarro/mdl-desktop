@@ -1,57 +1,36 @@
+import _ from 'lodash'
 import React from 'react';
 import { Link } from 'react-router';
 
+import Utils from '../core/utils'
 import Provider from '../core/provider'
 import Formatter from '../core/formatter'
-import Fetch from '../core/fetch'
-import Alert from '../core/alert'
 
 import Input from '../components/input'
 import Button from '../components/button'
-import Header from '../components/header'
 import Dropdown from '../components/dropdown'
 import Textarea from '../components/textarea'
 import Datatable from '../components/datatable'
 
 
-import View from './abstract/View'
+import TransactionView from './abstract/TransactionView'
 
-class PurchaseOrders extends View {
+class PurchaseOrders extends TransactionView {
 
     constructor(props) {
         super(props);
         this.endpoint = "purchaseOrder/";
+    }
 
-        this.state.totalAmount = 0;
-        this.state.pageOffset = 0;
-        this.state.purchaseOrder = null;
+    getColumns() {
+        const { transaction } = this.state;
 
-        let getStocks = (input, callback) => {
-
-            let parameters = {
-                filter: input,
-    						orderedBy: "name",
-    						pageSize: 5
-    				};
-
-    				Fetch.get("stock/", parameters, (items) => {
-                Provider.filteredItems.stock = items;
-
-                if (items) {
-                    let filteredStocks = items.map((item) => {
-                        return {value: item.id, label: item.name}
-                    });
-                    callback(null, { options: filteredStocks, cache: false });
-                }
-    				});
-        };
-
-        this.state.columns = [{
+        let columns = [{
                 key: "stock",
                 name: "Stock",
                 editable: true,
                 required: true,
-                getOptions: getStocks,
+                getOptions: super.getStocks.bind(this),
             }, {
                 key: "stock.description",
                 name: "Description"
@@ -64,165 +43,120 @@ class PurchaseOrders extends View {
                 editable: true,
                 required: true,
                 type: "number",
-                getDefaultValue: 1
+                getDefaultValue: (row) => row && row.stock ? 1 : null
             }, {
                 key: "price",
                 name: "Price",
                 editable: true,
                 required: true,
                 type: "amount",
-                getDefaultValue: (stock) => stock.cost
-            } , {
-                key: "amount",
-                name: "Amount",
-                formula: (item) => {
-                    if (item.price && item.quantity && !isNaN(item.price) && !isNaN(item.quantity)) {
-                        return parseFloat(item.price) * parseFloat(item.quantity);
-                    }
-                    return null;
-                }
+                getDefaultValue: (row) => row && row.stock ? stock.cost : null
             }
         ];
+
+        if (transaction) {
+            let createDiscountColumn = (key, name) => {
+                return {
+                    key,
+                    name,
+                    editable: true,
+                    required: true,
+                    type: "amount",
+                    getDefaultValue: 5
+                };
+            }
+
+            if (transaction.discount1) {
+                columns.push(createDiscountColumn("discount1", "D1"));
+            }
+
+            if (transaction.discount2) {
+                columns.push(createDiscountColumn("discount2", "D2"));
+            }
+
+            if (transaction.discount3) {
+                columns.push(createDiscountColumn("discount3", "D3"));
+            }
+        }
+
+        columns.push({
+            key: "amount",
+            name: "Amount",
+            type: "amount",
+            formula: (item) => {
+                if (item.price && item.quantity && !isNaN(item.price) && !isNaN(item.quantity)) {
+                    const gross = parseFloat(item.price) * parseFloat(item.quantity);
+                    let net = gross;
+
+                    if (item.discount1 && !isNaN(item.discount1)) {
+                        net = net - (net * (parseFloat(item.discount1) / 100));
+                    }
+
+                    if (item.discount2 && !isNaN(item.discount2)) {
+                        net = net - (net * (parseFloat(item.discount2) / 100));
+                    }
+
+                    if (item.discount3 && !isNaN(item.discount3)) {
+                        net = net - (net * (parseFloat(item.discount3) / 100));
+                    }
+                    return net;
+                }
+                return null;
+            }
+        });
+
+        return columns;
     }
 
     componentDidMount() {
-        this.onFetch();
+        super.componentDidMount();
         Provider.loadSuppliers((suppliers) => this.setState({suppliers}));
     }
 
-    onSupplierChange(supplier) {
-		    let purchaseOrder = this.state.purchaseOrder || {};
-		    purchaseOrder.supplier = {id: supplier.value};
-		    this.setState({purchaseOrder});
-		}
-
-    onSave() {
-        let invalidRowIndexes = this.purchaseOrderItemsTable.revalidateAndGetInvalidRowIndexes();
-
-        if (invalidRowIndexes.length == 0) {
-            this.state.updateMode == "CREATE" ? this.onCreate() :  this.onUpdate();
-        } else {
-            Alert.error("Please correct invalid items before saving");
-        }
-    }
-
     getRequestValue() {
-        let purchaseOrder = this.state.purchaseOrder;
-        purchaseOrder.items = this.purchaseOrderItemsTable.getRows();
-        return purchaseOrder;
-		}
-
-		onCreate() {
-				console.log("Creating..");
-				Fetch.post(this.endpoint, this.getRequestValue(), () => {
-						this.setState({updateMode : null});
-            console.log("Create successful");
-				});
-		}
-
-		onUpdate() {
-        console.log("Updating..");
-				Fetch.patch(this.endpoint, this.getRequestValue(), () => {
-						this.setState({updateMode : null});
-						console.log("Update successful");
-				});
-		}
-
-    onCancel() {
-        console.log("Cancelling..");
-        this.setState({
-            purchaseOrder: this.state.previousPurchaseOrder,
-            updateMode: null
-        });
-    }
-
-    onAdd() {
-        console.log("Adding..");
-        let purchaseOrder = {};
-        let items = [{}];
-
-        this.setState({
-            totalAmount: 0,
-            updateMode: "CREATE",
-            purchaseOrder,
-            items
-        }, () => this.firstInput.focus());
-    }
-
-    onEdit() {
-        console.log("Editing..");
-
-        let { purchaseOrder, items } = this.state;
-        this.updateTotalAmount(items);
-
-        this.setState({
-            updateMode: "UPDATE",
-            purchaseOrder
-        }, () => this.firstInput.focus());
-    }
-
-    onDelete() {
-        console.log("Deleting..");
-        Fetch.delete(this.endpoint, this.state.purchaseOrder.id, () => this.onFetch());
-    }
-
-    onFetch(direction = "next") {
-        let parameters = {};
-        if (this.state.purchaseOrder) {
-            parameters.documentNo = this.state.purchaseOrder.documentNo;
-        }
-
-        Fetch.get("purchaseOrder/" + direction, parameters, (purchaseOrder) => {
-            let items = null;
-            if (purchaseOrder) {
-                items = purchaseOrder.items;
-                items.push({});
+        let transaction = this.state.transaction;
+        transaction.items = this.transactionItemsTable.getRows().map((item) => {
+            if (!transaction.discount1) {
+                delete item.discount1;
             }
 
-            this.setState({
-                items,
-                purchaseOrder,
-                previousPurchaseOrder: purchaseOrder
-            });
+            if (!transaction.discount2) {
+                delete item.discount2;
+            }
 
-            this.updateTotalAmount(items);
+            if (!transaction.discount3) {
+                delete item.discount3;
+            }
+            return item;
         });
+
+        return transaction;
+		}
+
+    onSupplierChange(supplier) {
+		    let transaction = this.state.transaction || {};
+		    transaction.supplier = {id: supplier.value};
+		    this.setState({transaction});
+		}
+
+    onDiscountChange(event) {
+        let nextState = this.state;
+        _.set(nextState, event.target.name, event.target.value);
+
+        nextState.transaction.items = nextState.transaction.items.filter((item) => {
+              if (!Utils.isEmpty(item)) {
+                  item.discount1 = event.target.value;
+              }
+              return item;
+        });
+
+        this.setState(nextState);
     }
 
-    checkTableTab(event) {
-        if (event.keyCode == 9 && !event.shiftKey) {
-            event.preventDefault();
-            this.purchaseOrderItemsTable.selectFirstCell();
-        }
-    }
+    renderTransaction() {
+        let { transaction, suppliers, totalAmount, items, updateMode } = this.state;
 
-    updateTotalAmount(rows) {
-        let totalAmount = 0;
-        if (rows) {
-            totalAmount = rows.reduce((accumulated, value) => {
-                let current = value.price && value.quantity ? value.price * value.quantity : 0;
-                return accumulated + current;
-            }, 0);
-        }
-        this.setState({totalAmount});
-    }
-
-    onPrevious() {
-        this.onFetch("previous");
-    }
-
-    onNext() {
-        this.onFetch("next");
-    }
-
-    renderPlaceholder() {
-        return <p>No result</p>;
-    }
-
-    renderPurchaseOrder() {
-        let { purchaseOrder, suppliers, totalAmount, items } = this.state;
-
-        let supplier = purchaseOrder.supplier;
+        let supplier = transaction.supplier;
         let supplierId = supplier ? supplier.id : null;
 
         let supplierItems = [];
@@ -235,72 +169,54 @@ class PurchaseOrders extends View {
         return <div className="ui form">
             <div className="fields">
                 <Input ref={(input) => {this.firstInput = input}} autoFocus="true"
-                    name="purchaseOrder.documentNo"
-                    label="Document No." value={purchaseOrder.documentNo} disabled={!this.state.updateMode}
+                    name="transaction.documentNo"
+                    label="Document No." value={transaction.documentNo} disabled={!updateMode}
                     onChange={super.onChange.bind(this)} fieldClassName="eight" />
 
-                <Input name="purchaseOrder.date" placeholder="MM/dd/yyyy"
-                    label="Date" value={purchaseOrder.date} disabled={!this.state.updateMode}
+                <Input name="transaction.date" placeholder="MM/dd/yyyy"
+                    label="Date" value={transaction.date} disabled={!updateMode}
                     onChange={super.onChange.bind(this)} fieldClassName="eight" />
             </div>
 
             <div className="fields">
-                <Dropdown name="supplier" label="Supplier" value={supplierId} disabled={!this.state.updateMode}
+                <Dropdown name="supplier" label="Supplier" value={supplierId} disabled={!updateMode}
                     options={supplierItems} onChange={(value) => this.onSupplierChange(value)}
-                    fieldClassName="eight" />
+                    fieldClassName="seven" />
 
-                <Input name="totalAmount" label="Total Amount"
-                    value={Formatter.formatAmount(totalAmount)} disabled={true}
-                    fieldClassName="eight" />
+                <Input name="transaction.discount1" maxLength={2}
+                    label="Discount 1" value={transaction.discount1} disabled={!updateMode}
+                    onChange={this.onDiscountChange.bind(this)} fieldClassName="three" />
+
+                <Input name="transaction.discount2" maxLength={2}
+                    label="Discount 2" value={transaction.discount2} disabled={!updateMode || !transaction.discount1}
+                    onChange={super.onChange.bind(this)} fieldClassName="three" />
+
+                <Input name="transaction.discount3" maxLength={2}
+                    label="Discount 3" value={transaction.discount3} disabled={!updateMode || !transaction.discount2}
+                    onChange={super.onChange.bind(this)} fieldClassName="three" />
             </div>
 
             <div className="fields">
                 <Textarea ref={(input) => {this.lastInput = input}}
-                    name="purchaseOrder.remarks" label="Remarks" value={purchaseOrder.remarks} disabled={!this.state.updateMode}
+                    name="transaction.remarks" label="Remarks" value={transaction.remarks} disabled={!updateMode}
                     onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)}
+                    fieldClassName="eight" />
+                <Input name="totalAmount" label="Total Amount"
+                    value={Formatter.formatAmount(totalAmount)} disabled={true}
                     fieldClassName="eight" />
             </div>
             <br/>
 
             <Datatable
-                columns={this.state.columns}
+                columns={this.getColumns()}
                 rows={items} footers={this.state.footers}
-                disabled={!this.state.updateMode} allowedDelete={true}
-                ref={(table) => { this.purchaseOrderItemsTable = table; }}
+                disabled={!updateMode} allowedDelete={true}
+                ref={(table) => { this.transactionItemsTable = table; }}
                 onRowsChange={(rows) => this.updateTotalAmount(rows)}
+
+                tx={transaction}
+
                 firstInput={this.firstInput} lastInput={this.lastInput} />
-        </div>;
-    }
-
-    getActions() {
-        let { purchaseOrder, updateMode } = this.state;
-        let actionButtons = null;
-
-        if (updateMode) {
-            actionButtons = <div>
-                <Button className="ui green button" icon="save" onClick={() => this.onSave()}>Save</Button>
-                <Button className="ui button" icon="ban" onClick={() => this.onCancel()}>Cancel</Button>
-            </div>;
-        } else {
-            actionButtons = <div>
-                {purchaseOrder ? <Button className="ui button basic teal" icon="angle left" onClick={() => this.onPrevious()}>Previous</Button> : null}
-                {purchaseOrder ? <Button className="ui button basic teal" icon="angle right" onClick={() => this.onNext()}>Next</Button> : null}
-
-                <Button className="ui green button" icon="add" onClick={() => this.onAdd()}>Add</Button>
-                {purchaseOrder ? <Button className="ui blue button" icon="write" onClick={() => this.onEdit()}>Edit</Button> : null}
-                {purchaseOrder ? <Button className="ui button" icon="trash" onClick={() => this.onDelete()}>Delete</Button> : null}
-            </div>
-        }
-        return <div className="actions">{actionButtons}</div>;
-    }
-
-    render() {
-        let { purchaseOrder, updateMode } = this.state;
-
-        return <div>
-						<Header />
-            {this.state.purchaseOrder ? this.renderPurchaseOrder() : this.renderPlaceholder()}
-            {this.getActions()}
         </div>;
     }
 

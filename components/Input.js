@@ -28,7 +28,6 @@ class Input extends React.Component {
 				fieldClassName = fieldClassName ? fieldClassName + " wide field" : "field";
 
 				let props = Object.assign({}, this.props);
-				
 				if (typeof props.defaultValue == "undefined") {
 						props.value = props.value || "";
 				}

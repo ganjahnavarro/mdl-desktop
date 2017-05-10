@@ -24,8 +24,6 @@ todo!
 
 [x] initial ui design
 
----
-
 [x] update
 [x] navigation
 
@@ -36,21 +34,24 @@ todo!
     [x] Customer - Terms, Owner's Name, Home address, Account Number
     [x] Supplier - Terms
 
-[ ] po & po item discounts
+---
 
+[x] po & po item discounts
 [ ] sales orders
-[ ] counters
 
-[ ] date mask
+[ ] basic po print out
 
 [ ] reports screens
-[ ] pdf printout (PO, SO, lists)
+[ ] lists printout
+
+[ ] counters
 
 
 
 
 -- nice to haves
 
+[ ] date mask
 [ ] search
 [ ] hotkeys
     - alt s   -> Save

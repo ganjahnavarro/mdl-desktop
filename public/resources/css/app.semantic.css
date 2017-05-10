@@ -94,6 +94,11 @@
     margin: 0.5em 0;
 }
 
-.app .ui.button:not(.icon) > .icon.angle:not(.button):not(.dropdown) {
+.app .ui.button:not(.icon) > .icon.angle:not(.button):not(.dropdown),
+.table button.ui.icon.button.mini {
     margin: 0;
+}
+
+.ui.celled.table tr td.amount {
+    text-align: right;
 }
