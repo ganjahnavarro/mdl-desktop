@@ -119,8 +119,21 @@ class TransactionView extends View {
         let totalAmount = 0;
         if (rows) {
             totalAmount = rows.reduce((accumulated, value) => {
-                let current = value.price && value.quantity ? value.price * value.quantity : 0;
-                return accumulated + current;
+                const gross = value.price && value.quantity ? parseFloat(value.price) * parseFloat(value.quantity) : 0;
+                let net = gross;
+
+                if (value.discount1 && !isNaN(value.discount1)) {
+                    net = net - (net * (parseFloat(value.discount1) / 100));
+                }
+
+                if (value.discount2 && !isNaN(value.discount2)) {
+                    net = net - (net * (parseFloat(value.discount2) / 100));
+                }
+
+                if (value.discount3 && !isNaN(value.discount3)) {
+                    net = net - (net * (parseFloat(value.discount3) / 100));
+                }
+                return accumulated + net;
             }, 0);
         }
         this.setState({totalAmount});

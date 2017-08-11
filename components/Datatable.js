@@ -306,7 +306,7 @@ class Datatable extends React.Component {
                 let existingValue = this.getProperty(row, column);
                 if (!existingValue) {
                     let isFunction = typeof column.getDefaultValue == "function";
-                    let defaultValue = isFunction ? column.getDefaultValue(stock) : column.getDefaultValue;
+                    let defaultValue = isFunction ? column.getDefaultValue(row) : column.getDefaultValue;
                     _.set(row, column.key, defaultValue);
                 }
             }

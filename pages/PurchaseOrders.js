@@ -50,7 +50,7 @@ class PurchaseOrders extends TransactionView {
                 editable: true,
                 required: true,
                 type: "amount",
-                getDefaultValue: (row) => row && row.stock ? stock.cost : null
+                getDefaultValue: (row) => row && row.stock ? row.stock.cost : null
             }
         ];
 
@@ -62,7 +62,7 @@ class PurchaseOrders extends TransactionView {
                     editable: true,
                     required: true,
                     type: "amount",
-                    getDefaultValue: 5
+                    getDefaultValue: (row) => row && row.stock ? row.stock.cost : null
                 };
             }
 
@@ -143,14 +143,14 @@ class PurchaseOrders extends TransactionView {
         let nextState = this.state;
         _.set(nextState, event.target.name, event.target.value);
 
-        nextState.transaction.items = nextState.transaction.items.filter((item) => {
+        nextState.items = nextState.items.filter((item) => {
               if (!Utils.isEmpty(item)) {
                   item[field] = event.target.value;
               }
               return item;
         });
 
-        this.setState(nextState);
+        this.setState(nextState, () => this.updateTotalAmount(nextState.items));
     }
 
     renderTransaction() {
