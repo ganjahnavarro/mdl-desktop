@@ -30,7 +30,7 @@ class Temp extends View {
 		onFetch(extraParameters) {
 				let defaultParameters = {
 						orderedBy: "name",
-						pageSize: 5,
+						pageSize: 100,
 						pageOffset: 0
 				};
 

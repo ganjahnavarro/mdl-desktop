@@ -33,9 +33,9 @@ class Units extends ListView {
 													onChange={this.onFilter.bind(this)} placeholder="Type here to search" />
 
 										<div className="ui divider"></div>
-										<ul className="ui list">
-												{items}
-										</ul>
+										<div className="files">
+													<ul className="ui list">{items}</ul>
+										</div>
 								</div>
 
 								<div className="eleven wide column">

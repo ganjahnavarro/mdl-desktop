@@ -128,9 +128,8 @@ class SalesOrders extends TransactionView {
         transaction = transaction || {};
 		    transaction.customer = {id: customer.value};
 
-        debugger;
         if (customers) {
-            let customerObject = customers.find((customer) => customer.id == customer.value);
+            let customerObject = customers.find((item) => item.id == customer.value);
             if (customerObject && customerObject.agent && !transaction.agent) {
                 transaction.agent = customerObject.agent;
             }
@@ -197,15 +196,21 @@ class SalesOrders extends TransactionView {
             <div className="fields">
                 <Dropdown name="customer" label="Customer" value={customerId} disabled={!updateMode}
                     options={customerItems} onChange={(value) => this.onCustomerChange(value)}
-                    fieldClassName="six" />
+                    fieldClassName="five" />
 
                 <Dropdown name="agent" label="Agent" value={agentId} disabled={!updateMode}
                     options={agentItems} onChange={(value) => this.onAgentChange(value)}
-                    fieldClassName="six" />
+                    fieldClassName="five" />
 
-                <Input name="totalAmount" label="Total Amount"
-                    value={Formatter.formatAmount(totalAmount)} disabled={true}
-                    fieldClassName="four" />
+                <Input ref={(input) => {this.discount1Input = input}}
+                    name="transaction.discount1" maxLength={2}
+                    label="Discount 1" value={transaction.discount1} disabled={!updateMode}
+                    onChange={(event) => this.onDiscountChange(event, "discount1")} fieldClassName="three" />
+
+                <Input ref={(input) => {this.discount2Input = input}}
+                    name="transaction.discount2" maxLength={2}
+                    label="Discount 2" value={transaction.discount2} disabled={!updateMode || !transaction.discount1}
+                    onChange={(event) => this.onDiscountChange(event, "discount2")} fieldClassName="three" />
             </div>
 
             <div className="fields">
@@ -213,14 +218,9 @@ class SalesOrders extends TransactionView {
                     name="transaction.remarks" label="Remarks" value={transaction.remarks} disabled={!updateMode}
                     onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)}
                     fieldClassName="eight" />
-
-                <Input name="transaction.discount1" maxLength={2}
-                    label="Discount 1" value={transaction.discount1} disabled={!updateMode}
-                    onChange={(event) => this.onDiscountChange(event, "discount1")} fieldClassName="four" />
-
-                <Input name="transaction.discount2" maxLength={2}
-                    label="Discount 2" value={transaction.discount2} disabled={!updateMode || !transaction.discount1}
-                    onChange={(event) => this.onDiscountChange(event, "discount2")} fieldClassName="four" />
+                <Input name="totalAmount" label="Total Amount"
+                    value={Formatter.formatAmount(totalAmount)} disabled={true}
+                    fieldClassName="eight" />
             </div>
             <br/>
 

@@ -72,6 +72,7 @@ class Datatable extends React.Component {
                 return false;
             }
         });
+        this.componentWillReceiveProps(this.props);
     }
 
     isSelecting() {
@@ -121,7 +122,7 @@ class Datatable extends React.Component {
                     selectedColumnIndex = null;
                     selectedRowIndex = null;
                     this.onCellFocus = false;
-                    this.props.lastInput.focus();
+                    this.props.getLastInput().focus();
                 } else {
                     selectedRowIndex--;
                     selectedColumnIndex = this.props.columns.length;
@@ -153,7 +154,7 @@ class Datatable extends React.Component {
                         selectedColumnIndex = null;
                         selectedRowIndex = null;
                         this.onCellFocus = false;
-                        this.props.firstInput.focus();
+                        this.props.getFirstInput().focus();
                     } else {
                         this.addRow();
                         selectedRowIndex++;
@@ -350,11 +351,6 @@ class Datatable extends React.Component {
 
         let value = column.formula ? this.getFormulaValue(column, row) : this.getProperty(row, column);
         let cellContent = typeof column.getOptions != "undefined" && value ? value.name : value;
-
-        // if (typeof cellContent == "undefined" && typeof column.getDefaultValue != "undefined") {
-        //     let isFunction = typeof column.getDefaultValue == "function";
-        //     cellContent = isFunction ? column.getDefaultValue() : column.getDefaultValue;
-        // }
 
         if (column.editable) { this.tabIndex++ }
         let tabIndex = this.tabIndex;

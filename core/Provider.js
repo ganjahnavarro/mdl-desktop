@@ -76,4 +76,16 @@ Provider.loadBrands = function(callback) {
     });
 };
 
+Provider.loadCustomers = function(callback) {
+    let parameters = {
+        orderedBy: "name"
+    };
+
+    Fetch.get("customer/", parameters, (items) => {
+        if (callback) {
+            callback(items);
+        }
+    });
+};
+
 module.exports = Provider;

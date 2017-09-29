@@ -45,8 +45,6 @@ class Input extends React.Component {
 						</div>
 				}
 
-
-
 		    return <div className={fieldClassName}>
 						{label ? <label>{label}</label> : null}
 						{component}

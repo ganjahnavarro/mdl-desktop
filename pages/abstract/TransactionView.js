@@ -5,6 +5,7 @@ import Fetch from '../../core/fetch'
 import Provider from '../../core/provider'
 import Alert from '../../core/alert'
 
+import Audit from '../../components/Audit'
 import Button from '../../components/button'
 import Header from '../../components/header'
 
@@ -148,14 +149,14 @@ class TransactionView extends View {
     }
 
     renderPlaceholder() {
-        return <p>No result</p>;
+        return <span className="transaction-placeholder">No results. Click add to create the first transaction.</span>;
     }
 
     getStocks(input, callback) {
         let parameters = {
             filter: input,
             orderedBy: "name",
-            pageSize: 5
+            pageSize: 10
         };
 
         Fetch.get("stock/", parameters, (items) => {
@@ -194,10 +195,12 @@ class TransactionView extends View {
 
     render() {
         let { transaction, updateMode } = this.state;
+        const auditComponent = <Audit value={this.state.transaction} />;
 
         return <div>
 						<Header />
             {this.state.transaction ? this.renderTransaction() : this.renderPlaceholder()}
+            {this.state.transaction ? auditComponent : null}
             {this.getActions()}
         </div>;
     }

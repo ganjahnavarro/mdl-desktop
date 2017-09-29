@@ -25,7 +25,8 @@ class PurchaseOrders extends TransactionView {
     getColumns() {
         const { transaction } = this.state;
 
-        let columns = [{
+        let columns = [
+            {
                 key: "stock",
                 name: "Stock",
                 editable: true,
@@ -62,7 +63,7 @@ class PurchaseOrders extends TransactionView {
                     editable: true,
                     required: true,
                     type: "amount",
-                    getDefaultValue: (row) => row && row.stock ? row.stock.cost : null
+                    getDefaultValue: (row) => row && row.stock ? transaction[key] : null
                 };
             }
 
@@ -197,7 +198,7 @@ class PurchaseOrders extends TransactionView {
             </div>
 
             <div className="fields">
-                <Textarea ref={(input) => {this.lastInput = input}}
+                <Textarea ref={(input) => {this.lastInput = input;}}
                     name="transaction.remarks" label="Remarks" value={transaction.remarks} disabled={!updateMode}
                     onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)}
                     fieldClassName="eight" />
@@ -213,7 +214,8 @@ class PurchaseOrders extends TransactionView {
                 disabled={!updateMode} allowedDelete={true}
                 ref={(table) => { this.transactionItemsTable = table; }}
                 onRowsChange={(rows) => this.updateTotalAmount(rows)}
-                firstInput={this.firstInput} lastInput={this.lastInput} />
+                getFirstInput={() => this.firstInput}
+                getLastInput={() => this.lastInput} />
         </div>;
     }
 

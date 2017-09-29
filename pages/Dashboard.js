@@ -44,7 +44,7 @@ class Dashboard extends View {
 				];
 
 				let reports = [
-						{link: "/todo", label: "Transaction List", icon: "icon_report1"},
+						{link: "/transactions", label: "Transaction List", icon: "icon_report1"},
 						{link: "/todo", label: "Stock Movement", icon: "icon_report2"},
 						{link: "/todo", label: "Stock Monitoring", icon: "icon_report3"},
 						{link: "/todo", label: "Purchase Monitoring", icon: "icon_report4"},
