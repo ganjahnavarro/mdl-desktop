@@ -11,7 +11,7 @@ import Header from '../components/header'
 import Textarea from '../components/textarea'
 
 
-class Categories extends ListView {
+class Brands extends ListView {
 
 		constructor(props) {
 		    super(props);
@@ -73,4 +73,4 @@ class Brand extends DetailView {
 		}
 }
 
-export default Categories;
+export default Brands;

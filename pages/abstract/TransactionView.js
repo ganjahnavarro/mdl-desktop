@@ -4,6 +4,7 @@ import View from './View'
 import Fetch from '../../core/fetch'
 import Provider from '../../core/provider'
 import Alert from '../../core/alert'
+import Utils from '../../core/utils'
 
 import Audit from '../../components/Audit'
 import Button from '../../components/button'
@@ -84,6 +85,13 @@ class TransactionView extends View {
     onDelete() {
         console.log("Deleting..");
         Fetch.delete(this.endpoint, this.state.transaction.id, () => this.onFetch());
+    }
+
+    onPrint() {
+        const requestData = [
+            { key: "documentNo", value: this.state.transaction.documentNo }
+        ];
+        Utils.print(this.type, requestData);
     }
 
     onFetch(direction = "next") {
@@ -188,6 +196,7 @@ class TransactionView extends View {
                 <Button className="ui green button" icon="add" onClick={() => this.onAdd()}>Add</Button>
                 {transaction ? <Button className="ui blue button" icon="write" onClick={() => this.onEdit()}>Edit</Button> : null}
                 {transaction ? <Button className="ui button" icon="trash" onClick={() => this.onDelete()}>Delete</Button> : null}
+                {transaction ? <Button className="ui button" icon="print" onClick={() => this.onPrint()}>Print</Button> : null}
             </div>
         }
         return <div className="actions">{actionButtons}</div>;

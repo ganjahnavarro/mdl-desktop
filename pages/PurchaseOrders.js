@@ -19,7 +19,8 @@ class PurchaseOrders extends TransactionView {
 
     constructor(props) {
         super(props);
-        this.endpoint = "purchaseOrder/";
+        this.type = "purchaseOrder";
+        this.endpoint = `${this.type}/`;
     }
 
     getColumns() {

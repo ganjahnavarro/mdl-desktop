@@ -1,14 +1,14 @@
 import Store from 'store'
 import { Base64 } from 'js-base64'
 
-import { BASE_URL } from './constants'
+import { DEPLOYMENT_URL } from './constants'
 import Alert from './alert'
 
 let Fetch = {};
 
 Fetch.get = function(resource, urlParameters, successCallback, errorCallback) {
     preFetch();
-    let url = BASE_URL + resource + parseQuery(urlParameters);
+    let url = DEPLOYMENT_URL + resource + parseQuery(urlParameters);
 
     fetch(url, getDefaultHeaders())
         .then((response) => handleResponse(successCallback, errorCallback, response))
@@ -22,7 +22,7 @@ Fetch.post = function(resource, requestBody, successCallback, errorCallback) {
         body: JSON.stringify(requestBody)
     });
 
-    fetch(BASE_URL + resource, headers)
+    fetch(DEPLOYMENT_URL + resource, headers)
         .then((response) => handleResponse(successCallback, errorCallback, response))
         .catch((error) => handleError(errorCallback, error));
 }
@@ -34,14 +34,14 @@ Fetch.patch = function(resource, requestBody, successCallback, errorCallback) {
         body: JSON.stringify(requestBody)
     });
 
-    fetch(BASE_URL + resource, headers)
+    fetch(DEPLOYMENT_URL + resource, headers)
         .then((response) => handleResponse(successCallback, errorCallback, response))
         .catch((error) => handleError(errorCallback, error));
 }
 
 Fetch.delete = function(resource, id, successCallback, errorCallback) {
     preFetch();
-    let url = BASE_URL + resource + id;
+    let url = DEPLOYMENT_URL + resource + id;
     let headers = Object.assign({}, getDefaultHeaders(), {
         method: "DELETE"
     });
@@ -80,7 +80,7 @@ function handleSuccess(successCallback, response) {
                 let value = JSON.parse(text);
                 successCallback(value);
             } catch(err) {
-                successCallback(null);
+                successCallback(text);
             }
         });
     }

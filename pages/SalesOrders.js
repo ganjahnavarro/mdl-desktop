@@ -19,7 +19,8 @@ class SalesOrders extends TransactionView {
 
     constructor(props) {
         super(props);
-        this.endpoint = "salesOrder/";
+        this.type = "purchaseOrder";
+        this.endpoint = `${this.type}/`;
     }
 
     getColumns() {
@@ -50,7 +51,7 @@ class SalesOrders extends TransactionView {
                 editable: true,
                 required: true,
                 type: "amount",
-                getDefaultValue: (row) => row && row.stock ? stock.cost : null
+                getDefaultValue: (row) => row && row.stock ? row.stock.price : null
             }
         ];
 
@@ -148,14 +149,14 @@ class SalesOrders extends TransactionView {
         let nextState = this.state;
         _.set(nextState, event.target.name, event.target.value);
 
-        nextState.transaction.items = nextState.transaction.items.filter((item) => {
+        nextState.items = nextState.items.filter((item) => {
               if (!Utils.isEmpty(item)) {
                   item[field] = event.target.value;
               }
               return item;
         });
 
-        this.setState(nextState);
+        this.setState(nextState, () => this.updateTotalAmount(nextState.items));
     }
 
     renderTransaction() {

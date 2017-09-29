@@ -4,10 +4,10 @@ import View from './abstract/View'
 
 import Fetch from '../core/fetch'
 import Alert from '../core/alert'
+import Utils from '../core/utils'
 
 import Input from '../components/input'
 import Button from '../components/button'
-
 
 class Login extends View {
 
@@ -42,7 +42,7 @@ class Login extends View {
 												onChange={super.onChange.bind(this)} />
 
 										<Input placeholder="Password" name="password" value={this.state.password}
-												onChange={super.onChange.bind(this)} icon="lock" />
+												onChange={super.onChange.bind(this)} icon="lock" type="password" />
 
 										<Button className="ui fluid large basic purple submit button" onClick={() => this.login()}>Login</Button>
 								</div>
