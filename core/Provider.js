@@ -88,6 +88,14 @@ Provider.loadCustomers = function(callback) {
     });
 };
 
+Provider.loadCustomerDiscounts = function(customerId, callback) {
+    Fetch.get(`customerDiscount/${customerId}`, null, (items) => {
+        if (callback) {
+            callback(items);
+        }
+    });
+};
+
 Provider.getStocks = (input, callback) => {
     let parameters = {
         filter: input,
