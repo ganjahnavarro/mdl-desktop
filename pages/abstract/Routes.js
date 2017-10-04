@@ -15,8 +15,13 @@ import Stocks from '../Stocks'
 
 import PurchaseOrders from '../PurchaseOrders'
 import SalesOrders from '../SalesOrders'
+import CounterReceipt from '../CounterReceipt'
 
-import Transactions from '../Transactions'
+import Transactions from '../reports/Transactions'
+import StockMovement from '../reports/StockMovement'
+import StockMonitoring from '../reports/StockMonitoring'
+import PurchaseMonitoring from '../reports/PurchaseMonitoring'
+import SalesMonitoring from '../reports/SalesMonitoring'
 
 import Todo from '../Todo'
 
@@ -43,8 +48,13 @@ module.exports = (
 
         <Route path="/purchaseOrders" component={PurchaseOrders} onEnter={requireAuth}/>
         <Route path="/salesOrders" component={SalesOrders} onEnter={requireAuth}/>
+        <Route path="/counterReceipts" component={CounterReceipt} onEnter={requireAuth}/>
 
         <Route path="/transactions" component={Transactions} onEnter={requireAuth}/>
+        <Route path="/stockMovement" component={StockMovement} onEnter={requireAuth}/>
+        <Route path="/stockMonitoring" component={StockMonitoring} onEnter={requireAuth}/>
+        <Route path="/purchaseMonitoring" component={PurchaseMonitoring} onEnter={requireAuth}/>
+        <Route path="/salesMonitoring" component={SalesMonitoring} onEnter={requireAuth}/>
 
         <Route path="/todo" component={Todo} onEnter={requireAuth}/>
     </Route>

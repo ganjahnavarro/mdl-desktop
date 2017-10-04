@@ -87,3 +87,19 @@ span.transaction-placeholder {
     font-size: 22px;
     display: block;
 }
+
+.ui.form.report-panel,
+.ui.report-panel,
+.report-panel {
+    width: 600px;
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.ui.basic.button.report-option {
+    width: 100%;
+    min-height: 50px;
+}

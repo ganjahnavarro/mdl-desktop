@@ -4,7 +4,7 @@
   "description": "MDL Procurement",
   "main": "desktop.js",
   "scripts": {
-    "start:dev": "webpack-dev-server --port 3000 --inline --content-base public/ --history-api-fallback --host 0.0.0.0",
+    "start:dev": "webpack-dev-server --port 8081 --inline --content-base public/ --history-api-fallback --host 0.0.0.0",
     "start:prod": "npm run build && node server.bundle.js",
     "build:client": "webpack",
     "build:server": "webpack --config webpack.server.config.js",
