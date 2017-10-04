@@ -88,4 +88,23 @@ Provider.loadCustomers = function(callback) {
     });
 };
 
+Provider.getStocks = (input, callback) => {
+    let parameters = {
+        filter: input,
+        orderedBy: "name",
+        pageSize: 10
+    };
+
+    Fetch.get("stock/", parameters, (items) => {
+        Provider.filteredItems.stock = items;
+
+        if (items) {
+            let filteredStocks = items.map((item) => {
+                return {value: item.id, label: item.name}
+            });
+            callback(null, { options: filteredStocks, cache: false });
+        }
+    });
+};
+
 module.exports = Provider;

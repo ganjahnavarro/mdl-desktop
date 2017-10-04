@@ -31,7 +31,7 @@ class SalesOrders extends TransactionView {
                 name: "Stock",
                 editable: true,
                 required: true,
-                getOptions: super.getStocks.bind(this),
+                getOptions: Provider.getStocks,
             }, {
                 key: "stock.description",
                 name: "Description"
@@ -55,26 +55,16 @@ class SalesOrders extends TransactionView {
             }
         ];
 
-        if (transaction) {
-            let createDiscountColumn = (key, name) => {
-                return {
-                    key,
-                    name,
-                    editable: true,
-                    required: true,
-                    type: "amount",
-                    getDefaultValue: 5
-                };
-            }
-
-            if (transaction.discount1) {
-                columns.push(createDiscountColumn("discount1", "D1"));
-            }
-
-            if (transaction.discount2) {
-                columns.push(createDiscountColumn("discount2", "D2"));
-            }
+        let createDiscountColumn = (key, name) => {
+            return {
+                key,
+                name,
+                editable: true,
+                type: "amount",
+            };
         }
+        columns.push(createDiscountColumn("discount1", "D1"));
+        columns.push(createDiscountColumn("discount2", "D2"));
 
         columns.push({
             key: "amount",
@@ -145,20 +135,6 @@ class SalesOrders extends TransactionView {
 		    this.setState({transaction});
 		}
 
-    onDiscountChange(event, field) {
-        let nextState = this.state;
-        _.set(nextState, event.target.name, event.target.value);
-
-        nextState.items = nextState.items.filter((item) => {
-              if (!Utils.isEmpty(item)) {
-                  item[field] = event.target.value;
-              }
-              return item;
-        });
-
-        this.setState(nextState, () => this.updateTotalAmount(nextState.items));
-    }
-
     renderTransaction() {
         let { transaction, customers, agents, totalAmount, items, updateMode } = this.state;
 
@@ -185,42 +161,33 @@ class SalesOrders extends TransactionView {
         return <div className="ui form">
             <div className="fields">
                 <Input ref={(input) => {this.firstInput = input}} autoFocus="true"
-                    name="transaction.documentNo"
+                    name="transaction.documentNo" disabled={true}
                     label="Document No." value={transaction.documentNo} disabled={!updateMode}
-                    onChange={super.onChange.bind(this)} fieldClassName="eight" />
+                    onChange={super.onChange.bind(this)} fieldClassName="four" />
 
                 <Input name="transaction.date" placeholder="MM/dd/yyyy"
                     label="Date" value={transaction.date} disabled={!updateMode}
-                    onChange={super.onChange.bind(this)} fieldClassName="eight" />
+                    onChange={super.onChange.bind(this)} fieldClassName="four" />
+
+                <Dropdown name="customer" label="Customer" value={customerId} disabled={!updateMode}
+                    options={customerItems} onChange={(value) => this.onCustomerChange(value)}
+                    fieldClassName="eight" />
             </div>
 
             <div className="fields">
-                <Dropdown name="customer" label="Customer" value={customerId} disabled={!updateMode}
-                    options={customerItems} onChange={(value) => this.onCustomerChange(value)}
-                    fieldClassName="five" />
-
                 <Dropdown name="agent" label="Agent" value={agentId} disabled={!updateMode}
                     options={agentItems} onChange={(value) => this.onAgentChange(value)}
-                    fieldClassName="five" />
+                    fieldClassName="eight" />
 
-                <Input ref={(input) => {this.discount1Input = input}}
-                    name="transaction.discount1" maxLength={2}
-                    label="Discount 1" value={transaction.discount1} disabled={!updateMode}
-                    onChange={(event) => this.onDiscountChange(event, "discount1")} fieldClassName="three" />
-
-                <Input ref={(input) => {this.discount2Input = input}}
-                    name="transaction.discount2" maxLength={2}
-                    label="Discount 2" value={transaction.discount2} disabled={!updateMode || !transaction.discount1}
-                    onChange={(event) => this.onDiscountChange(event, "discount2")} fieldClassName="three" />
+                <Input name="totalAmount" label="Total Amount"
+                    value={Formatter.formatAmount(totalAmount)} disabled={true}
+                    fieldClassName="eight" />
             </div>
 
             <div className="fields">
                 <Textarea ref={(input) => {this.lastInput = input}}
                     name="transaction.remarks" label="Remarks" value={transaction.remarks} disabled={!updateMode}
                     onChange={super.onChange.bind(this)} onKeyDown={this.checkTableTab.bind(this)}
-                    fieldClassName="eight" />
-                <Input name="totalAmount" label="Total Amount"
-                    value={Formatter.formatAmount(totalAmount)} disabled={true}
                     fieldClassName="eight" />
             </div>
             <br/>
@@ -231,7 +198,8 @@ class SalesOrders extends TransactionView {
                 disabled={!updateMode} allowedDelete={true}
                 ref={(table) => { this.transactionItemsTable = table; }}
                 onRowsChange={(rows) => this.updateTotalAmount(rows)}
-                firstInput={this.firstInput} lastInput={this.lastInput} />
+                getFirstInput={() => this.firstInput}
+                getLastInput={() => this.lastInput} />
         </div>;
     }
 

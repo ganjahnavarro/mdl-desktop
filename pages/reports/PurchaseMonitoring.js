@@ -48,25 +48,6 @@ class PurchaseMonitoring extends View {
 						});
 				}
 
-        const getStocks = (input, callback) => {
-						let parameters = {
-								filter: input,
-								orderedBy: "name",
-								pageSize: 10
-						};
-
-						Fetch.get("stock/", parameters, (items) => {
-								Provider.filteredItems.stock = items;
-
-								if (items) {
-										let filteredStocks = items.map((item) => {
-												return {value: item.id, label: item.name}
-										});
-										callback(null, { options: filteredStocks, cache: false });
-								}
-						});
-				};
-
 				return (<div>
 						<Header />
 
@@ -90,7 +71,7 @@ class PurchaseMonitoring extends View {
 
                 <div className="fields">
                     <Dropdown name="stock" label="Stock" value={stockId}
-                        loadOptions={getStocks} onChange={(value) => this.onStockChange(value)}
+                        loadOptions={Provider.getStocks} onChange={(value) => this.onStockChange(value)}
                         fieldClassName="sixteen" />
 								</div>
 

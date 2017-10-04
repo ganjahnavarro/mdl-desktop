@@ -160,25 +160,6 @@ class TransactionView extends View {
         return <span className="transaction-placeholder">No results. Click add to create the first transaction.</span>;
     }
 
-    getStocks(input, callback) {
-        let parameters = {
-            filter: input,
-            orderedBy: "name",
-            pageSize: 10
-        };
-
-        Fetch.get("stock/", parameters, (items) => {
-            Provider.filteredItems.stock = items;
-
-            if (items) {
-                let filteredStocks = items.map((item) => {
-                    return {value: item.id, label: item.name}
-                });
-                callback(null, { options: filteredStocks, cache: false });
-            }
-        });
-    }
-
     getActions() {
         let { transaction, updateMode } = this.state;
         let actionButtons = null;

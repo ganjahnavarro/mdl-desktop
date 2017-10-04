@@ -83,25 +83,6 @@ class SalesMonitoring extends View {
 						</div>);
 				};
 
-				const getStocks = (input, callback) => {
-						let parameters = {
-								filter: input,
-								orderedBy: "name",
-								pageSize: 10
-						};
-
-						Fetch.get("stock/", parameters, (items) => {
-								Provider.filteredItems.stock = items;
-
-								if (items) {
-										let filteredStocks = items.map((item) => {
-												return {value: item.id, label: item.name}
-										});
-										callback(null, { options: filteredStocks, cache: false });
-								}
-						});
-				};
-
 				const customerSelection = <Dropdown name="customer" label="Customer" value={customerId}
 						options={customerItems} onChange={(value) => this.onCustomerChange(value)}
 						fieldClassName="sixteen" />;
@@ -111,7 +92,7 @@ class SalesMonitoring extends View {
 						fieldClassName="sixteen" />;
 
 				const stockSelection = <Dropdown name="stock" label="Stock" value={stockId}
-						loadOptions={getStocks} onChange={(value) => this.onStockChange(value)}
+						loadOptions={Provider.getStocks} onChange={(value) => this.onStockChange(value)}
 						fieldClassName="sixteen" />;
 
 				return (<div>
