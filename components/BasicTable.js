@@ -3,13 +3,13 @@ import classNames from 'classnames'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import Provider from '../core/provider'
-import Formatter from '../core/formatter'
-import Utils from '../core/utils'
+import Provider from '../core/Provider'
+import Formatter from '../core/Formatter'
+import Utils from '../core/Utils'
 
-import Input from './input'
-import Button from './button'
-import Dropdown from './dropdown'
+import Input from './Input'
+import Button from './Button'
+import Dropdown from './Dropdown'
 
 
 class BasicTable extends React.Component {

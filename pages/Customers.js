@@ -5,16 +5,16 @@ import View from './abstract/View'
 import ListView from './abstract/ListView'
 import DetailView from './abstract/DetailView'
 
-import Provider from '../core/provider'
+import Provider from '../core/Provider'
 
-import Input from '../components/input'
+import Input from '../components/Input'
 import Audit from '../components/Audit'
-import Header from '../components/header'
-import Dropdown from '../components/dropdown'
-import Textarea from '../components/textarea'
-import Button from '../components/button'
+import Header from '../components/Header'
+import Dropdown from '../components/Dropdown'
+import Textarea from '../components/Textarea'
+import Button from '../components/Button'
 
-import BasicTable from '../components/basicTable'
+import BasicTable from '../components/BasicTable'
 
 
 class Customers extends ListView {

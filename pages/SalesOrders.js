@@ -2,15 +2,15 @@ import _ from 'lodash'
 import React from 'react';
 import { Link } from 'react-router';
 
-import Utils from '../core/utils'
-import Provider from '../core/provider'
-import Formatter from '../core/formatter'
+import Utils from '../core/Utils'
+import Provider from '../core/Provider'
+import Formatter from '../core/Formatter'
 
-import Input from '../components/input'
-import Button from '../components/button'
-import Dropdown from '../components/dropdown'
-import Textarea from '../components/textarea'
-import Datatable from '../components/datatable'
+import Input from '../components/Input'
+import Button from '../components/Button'
+import Dropdown from '../components/Dropdown'
+import Textarea from '../components/Textarea'
+import Datatable from '../components/Datatable'
 
 
 import TransactionView from './abstract/TransactionView'

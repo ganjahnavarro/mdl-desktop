@@ -2,12 +2,12 @@ import React from 'react'
 import { hashHistory } from 'react-router'
 import View from './abstract/View'
 
-import Fetch from '../core/fetch'
-import Alert from '../core/alert'
-import Utils from '../core/utils'
+import Fetch from '../core/Fetch'
+import Alert from '../core/Alert'
+import Utils from '../core/Utils'
 
-import Input from '../components/input'
-import Button from '../components/button'
+import Input from '../components/Input'
+import Button from '../components/Button'
 
 class Login extends View {
 

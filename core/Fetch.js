@@ -1,8 +1,8 @@
 import Store from 'store'
 import { Base64 } from 'js-base64'
 
-import { DEPLOYMENT_URL } from './constants'
-import Alert from './alert'
+import { DEPLOYMENT_URL } from './Constants'
+import Alert from './Alert'
 
 let Fetch = {};
 

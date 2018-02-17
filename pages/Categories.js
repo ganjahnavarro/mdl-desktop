@@ -5,10 +5,10 @@ import View from './abstract/View'
 import ListView from './abstract/ListView'
 import DetailView from './abstract/DetailView'
 
-import Input from '../components/input'
+import Input from '../components/Input'
 import Audit from '../components/Audit'
-import Header from '../components/header'
-import Textarea from '../components/textarea'
+import Header from '../components/Header'
+import Textarea from '../components/Textarea'
 
 
 class Categories extends ListView {

@@ -1,8 +1,8 @@
 import React from 'react'
 import View from './View'
 
-import Fetch from '../../core/fetch'
-import Button from '../../components/button'
+import Fetch from '../../core/Fetch'
+import Button from '../../components/Button'
 
 class Detail extends View {
 

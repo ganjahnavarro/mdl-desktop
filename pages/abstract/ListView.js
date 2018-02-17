@@ -1,7 +1,7 @@
 import React from 'react'
 import View from './View'
 
-import Fetch from '../../core/fetch'
+import Fetch from '../../core/Fetch'
 
 class Temp extends View {
 

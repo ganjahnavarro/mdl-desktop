@@ -1,4 +1,4 @@
-import Fetch from './fetch'
+import Fetch from './Fetch'
 
 let Provider = {
     filteredItems: {}

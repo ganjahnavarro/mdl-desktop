@@ -1,5 +1,5 @@
-import Fetch from './fetch';
-import { SERVER_URL, VIEWER_PATH, PDFS_DIRECTORY } from './constants';
+import Fetch from './Fetch';
+import { SERVER_URL, VIEWER_PATH, PDFS_DIRECTORY } from './Constants';
 
 let Utils = {};
 

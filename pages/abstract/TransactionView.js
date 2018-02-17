@@ -1,14 +1,14 @@
 import React from 'react'
 import View from './View'
 
-import Fetch from '../../core/fetch'
-import Provider from '../../core/provider'
-import Alert from '../../core/alert'
-import Utils from '../../core/utils'
+import Fetch from '../../core/Fetch'
+import Provider from '../../core/Provider'
+import Alert from '../../core/Alert'
+import Utils from '../../core/Utils'
 
 import Audit from '../../components/Audit'
-import Button from '../../components/button'
-import Header from '../../components/header'
+import Button from '../../components/Button'
+import Header from '../../components/Header'
 
 class TransactionView extends View {
 

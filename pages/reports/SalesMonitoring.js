@@ -3,14 +3,14 @@ import { hashHistory } from 'react-router'
 
 import View from '../abstract/View'
 
-import Fetch from '../../core/fetch'
-import Provider from '../../core/provider'
-import Utils from '../../core/utils'
+import Fetch from '../../core/Fetch'
+import Provider from '../../core/Provider'
+import Utils from '../../core/Utils'
 
-import Header from '../../components/header'
-import Dropdown from '../../components/dropdown'
-import Button from '../../components/button'
-import Input from '../../components/input'
+import Header from '../../components/Header'
+import Dropdown from '../../components/Dropdown'
+import Button from '../../components/Button'
+import Input from '../../components/Input'
 
 class SalesMonitoring extends View {
 

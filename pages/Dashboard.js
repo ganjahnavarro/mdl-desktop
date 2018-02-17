@@ -2,7 +2,7 @@ import React from 'react'
 import View from './abstract/View'
 import { Link } from 'react-router'
 
-import Header from '../components/header'
+import Header from '../components/Header'
 
 class Dashboard extends View {
 

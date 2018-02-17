@@ -2,12 +2,12 @@ import React from 'react'
 import { hashHistory } from 'react-router'
 import View from './abstract/View'
 
-import Fetch from '../core/fetch'
-import Alert from '../core/alert'
+import Fetch from '../core/Fetch'
+import Alert from '../core/Alert'
 
-import Input from '../components/input'
-import Button from '../components/button'
-import Header from '../components/header'
+import Input from '../components/Input'
+import Button from '../components/Button'
+import Header from '../components/Header'
 
 class Todo extends View {
 
